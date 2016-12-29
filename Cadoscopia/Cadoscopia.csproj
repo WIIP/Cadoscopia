@@ -79,6 +79,7 @@
     <Compile Include="Geometry\Vector.cs" />
     <Compile Include="LineViewModel.cs" />
     <Compile Include="MainViewModel.cs" />
+    <Compile Include="Pluralize.cs" />
     <Compile Include="SketchServices\Parameter.cs" />
     <Compile Include="PointViewModel.cs" />
     <Compile Include="SketchServices\Entity.cs" />

@@ -70,6 +70,15 @@ namespace Cadoscopia.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Select line first point:.
+        /// </summary>
+        internal static string LineFirstPoint {
+            get {
+                return ResourceManager.GetString("LineFirstPoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Select line second point:.
         /// </summary>
         internal static string LineSecondPoint {

@@ -129,7 +129,7 @@ namespace Cadoscopia
         {
             entityViewModel = new LineViewModel();
             step = 0;
-            Status = "Select line first point:";
+            Status = Resources.LineFirstPoint;
             CanvasCursor = Cursors.Cross;
         }
 
@@ -186,7 +186,7 @@ namespace Cadoscopia
                         if (data.Count() > 3)
                             Status = string.Format(Resources.EntitiesSelected, selection.Count);
                         else
-                            Status = string.Join(", ", data.Select(e => string.Format("{0} {1}", e.Count, e.Metric.Name.ToLower())))
+                            Status = string.Join(", ", data.Select(e => $"{e.Count} {Pluralize.Do(e.Metric.Name.ToLower(), e.Count)}"))
                                 + " " + Resources.Selected;
                         break;
                 }

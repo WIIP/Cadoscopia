@@ -135,4 +135,7 @@
   <data name="LineSecondPoint" xml:space="preserve">
     <value>Select line second point:</value>
   </data>
+  <data name="LineFirstPoint" xml:space="preserve">
+    <value>Select line first point:</value>
+  </data>
 </root>
