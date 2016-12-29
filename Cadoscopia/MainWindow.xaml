@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Cadoscopia"
         mc:Ignorable="d" d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
-        Title="Wiip Sketcher" Height="480" Width="640">
+        Title="Cadoscopia" Height="480" Width="640">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
