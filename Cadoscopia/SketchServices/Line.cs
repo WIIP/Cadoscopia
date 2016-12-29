@@ -40,7 +40,6 @@ namespace Cadoscopia.SketchServices
 
         #region Constructors
 
-
         public Line()
         {
             Start = new Point();

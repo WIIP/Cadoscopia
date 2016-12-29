@@ -26,24 +26,17 @@ namespace Cadoscopia.Geometry
     {
         #region Properties
 
+        public Vector Direction => Start.GetVector(End).Normalize();
+
+        public Point End { get; }
+
         public double Length => Start.GetDistanceTo(End);
 
-        public Vector Direction
-        {
-            get { return Start.GetVector(End).Normalize(); }
-        }
-
-        public Point End { get; set; }
-
-        public Point Start { get; set; }
+        public Point Start { get; }
 
         #endregion
 
         #region Constructors
-
-        public Line()
-        {
-        }
 
         public Line(Point start, Point end)
         {
@@ -53,10 +46,7 @@ namespace Cadoscopia.Geometry
 
         #endregion
 
-        public override double GetDistanceTo(Point point)
-        {
-            return GetClosestPointTo(point).GetDistanceTo(point);
-        }
+        #region Methods
 
         public Point GetClosestPointTo(Point point)
         {
@@ -65,5 +55,12 @@ namespace Cadoscopia.Geometry
             if (dotProduct > Length) return End;
             return Start + Direction * dotProduct;
         }
+
+        public override double GetDistanceTo(Point point)
+        {
+            return GetClosestPointTo(point).GetDistanceTo(point);
+        }
+
+        #endregion
     }
 }

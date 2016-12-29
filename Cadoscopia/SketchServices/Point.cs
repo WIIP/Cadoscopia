@@ -49,6 +49,7 @@ namespace Cadoscopia.SketchServices
         {
             if (x == null) throw new ArgumentNullException(nameof(x));
             if (y == null) throw new ArgumentNullException(nameof(y));
+
             X = x;
             Y = y;
         }
