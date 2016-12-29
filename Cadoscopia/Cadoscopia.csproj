@@ -71,6 +71,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Constraints\Constraint.cs" />
     <Compile Include="Constraints\Equals.cs" />
+    <Compile Include="Constraints\Parallel.cs" />
     <Compile Include="Constraints\Perpendicular.cs" />
     <Compile Include="Geometry\Entity.cs" />
     <Compile Include="EntityViewModel.cs" />

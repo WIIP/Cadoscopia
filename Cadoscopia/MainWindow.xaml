@@ -22,6 +22,7 @@
             <Button Command="{Binding VerticalCommand}" Margin="5,0,0,0">Vertical</Button>
             <Button Command="{Binding HorizontalCommand}" Margin="5,0,0,0">Horizontal</Button>
             <Button Command="{Binding PerpendicularCommand}" Margin="5,0,0,0">Perpendicular</Button>
+            <Button Command="{Binding ParallelCommand}" Margin="5,0,0,0">Parallel</Button>
         </StackPanel>
         <Canvas Background="White" Grid.Row="2" MouseDown="Canvas_MouseDown" Cursor="{Binding CanvasCursor}"
                 MouseMove="Canvas_MouseMove" SnapsToDevicePixels="True" ClipToBounds="True"

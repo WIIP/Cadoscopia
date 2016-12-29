@@ -86,6 +86,8 @@ namespace Cadoscopia
 
         public ICommand VerticalCommand { get; }
 
+        public ICommand ParallelCommand { get; }
+
         #endregion
 
         #region Constructors
@@ -95,9 +97,21 @@ namespace Cadoscopia
             Entities = new ObservableCollection<EntityViewModel>();
 
             HorizontalCommand = new RelayCommand(HorizontalCommandExecute, HorizontalVerticalCommandCanExecute);
+            ParallelCommand = new RelayCommand(ParallelCommandExecute, ParallelCommandCommandCanExecute);
             PerpendicularCommand = new RelayCommand(PerpendicularCommandExecute, PerpendicularCommandCanExecute);
             VerticalCommand = new RelayCommand(VerticalCommandExecute, HorizontalVerticalCommandCanExecute);
             LineCommand = new RelayCommand(LineCommandExecute);
+        }
+
+        bool ParallelCommandCommandCanExecute(object obj)
+        {
+            return Parallel.IsApplicable(selection.Select(e => e.SketchEntity));
+        }
+
+        void ParallelCommandExecute(object obj)
+        {
+            AddConstraint(new Parallel((Line)selection.ElementAt(0).SketchEntity,
+                (Line)selection.ElementAt(1).SketchEntity));
         }
 
         #endregion
