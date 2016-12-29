@@ -1,0 +1,15 @@
+# User-specific files
+*.suo
+*.user
+*.sln.docstates
+*.DotSettings
+
+# Build results
+[Bb]in/
+[Oo]bj/
+
+# ReSharper
+_ReSharper.*
+
+#NuGet
+packages/

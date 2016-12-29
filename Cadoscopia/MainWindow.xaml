@@ -1,0 +1,54 @@
+﻿<Window x:Class="Cadoscopia.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Cadoscopia"
+        mc:Ignorable="d" d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
+        Title="Wiip Sketcher" Height="480" Width="640">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5">
+            <TextBlock>Draw</TextBlock>
+            <Button Command="{Binding LineCommand}" Margin="5,0,0,0">Line</Button>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5">
+            <TextBlock>Constraints</TextBlock>
+            <Button Command="{Binding VerticalCommand}" Margin="5,0,0,0">Vertical</Button>
+            <Button Command="{Binding HorizontalCommand}" Margin="5,0,0,0">Horizontal</Button>
+            <Button Command="{Binding PerpendicularCommand}" Margin="5,0,0,0">Perpendicular</Button>
+        </StackPanel>
+        <Canvas Background="White" Grid.Row="2" MouseDown="Canvas_MouseDown" Cursor="{Binding CanvasCursor}"
+                MouseMove="Canvas_MouseMove" SnapsToDevicePixels="True" ClipToBounds="True"
+                Focusable="True" KeyDown="Canvas_KeyDown">
+            <ItemsControl ItemsSource="{Binding Entities}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.Resources>
+                    <DataTemplate DataType="{x:Type local:LineViewModel}">
+                        <Line X1="{Binding X1}" Y1="{Binding Y1}" X2="{Binding X2}" Y2="{Binding Y2}" 
+                              Stroke="{Binding Color}" StrokeThickness="2" />
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type local:PointViewModel}">
+                        <Ellipse Width="6" Height="6" Stroke="{Binding Color}" Fill="{Binding Color}"/>
+                    </DataTemplate>
+                </ItemsControl.Resources>
+                <ItemsControl.ItemContainerStyle>
+                    <Style>
+                        <Setter Property="Canvas.Left" Value="{Binding Left}"/>
+                        <Setter Property="Canvas.Top" Value="{Binding Top}"/>
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+            </ItemsControl>
+        </Canvas>
+        <TextBlock Grid.Row="3" Text="{Binding Status}" Margin="5"/>
+    </Grid>
+</Window>
