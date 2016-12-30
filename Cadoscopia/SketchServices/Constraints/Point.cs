@@ -21,36 +21,39 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Cadoscopia.SketchServices;
 using JetBrains.Annotations;
 
-namespace Cadoscopia.Constraints
+namespace Cadoscopia.SketchServices.Constraints
 {
-    class Equals : Constraint
+    public class Point : Entity
     {
-        public Equals([NotNull] Parameter first, [NotNull] Parameter second)
-        {
-            if (first == null) throw new ArgumentNullException(nameof(first));
-            if (second == null) throw new ArgumentNullException(nameof(second));
+        #region Properties
 
-            parameters.Add(first);
-            parameters.Add(second);
+        public override Geometry.Entity Geometry => new Geometry.Point(X.Value, Y.Value);
+
+        public Parameter X { get; }
+
+        public Parameter Y { get; }
+
+        #endregion
+
+        #region Constructors
+
+        public Point()
+        {
+            X = new Parameter();
+            Y = new Parameter();
         }
 
-        public override double Error
+        public Point([NotNull] Parameter x, [NotNull] Parameter y)
         {
-            get
-            {
-                double diff = Parameters[0].Value - Parameters[1].Value;
-                return diff * diff;
-            }
+            if (x == null) throw new ArgumentNullException(nameof(x));
+            if (y == null) throw new ArgumentNullException(nameof(y));
+
+            X = x;
+            Y = y;
         }
 
-        public static bool IsApplicable(IEnumerable<Entity> entities)
-        {
-            return entities.OfType<Line>().Any();
-        }
+        #endregion
     }
 }

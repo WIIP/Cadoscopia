@@ -25,8 +25,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Accord.Math.Differentiation;
 using Accord.Math.Optimization;
-using Cadoscopia.Constraints;
 using Cadoscopia.SketchServices;
+using Cadoscopia.SketchServices.Constraints;
 using JetBrains.Annotations;
 
 namespace Cadoscopia

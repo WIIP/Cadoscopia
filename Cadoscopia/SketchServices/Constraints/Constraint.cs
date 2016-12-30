@@ -20,37 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
-namespace Cadoscopia.SketchServices
+namespace Cadoscopia.SketchServices.Constraints
 {
-    // ReSharper disable once UseNameofExpression
-    [DebuggerDisplay("{DebuggerDisplay,nq}")]
-    public abstract class Entity
+    public abstract class Constraint: SketchObject
     {
-        #region Constants
-
-        const int INVALID_ID = -1;
-
-        #endregion
-
         #region Fields
+
+        protected readonly List<Parameter> parameters = new List<Parameter>();
 
         #endregion
 
         #region Properties
 
-        string DebuggerDisplay => $"{Geometry.GetType().Name}: {Id}";
+        public abstract double Error { get; }
 
-        public abstract Geometry.Entity Geometry { get; }
+        internal ReadOnlyCollection<Parameter> Parameters => new ReadOnlyCollection<Parameter>(parameters);
 
-        /// <summary>
-        /// Id of this entity.
-        /// </summary>
-        /// <remarks>
-        /// Each entity has a different id. Ids start at zero.
-        /// </remarks>
-        public int Id { get; internal set; } = INVALID_ID;
+        public virtual bool UseSharedParameters => false;
 
         #endregion
     }

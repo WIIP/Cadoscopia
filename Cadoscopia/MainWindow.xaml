@@ -10,21 +10,26 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition />
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5">
+            <TextBlock>File</TextBlock>
+            <Button Command="{Binding SaveCommand}" Margin="5,0,0,0">Save</Button>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5">
             <TextBlock>Draw</TextBlock>
             <Button Command="{Binding LineCommand}" Margin="5,0,0,0">Line</Button>
         </StackPanel>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5">
             <TextBlock>Constraints</TextBlock>
             <Button Command="{Binding VerticalCommand}" Margin="5,0,0,0">Vertical</Button>
             <Button Command="{Binding HorizontalCommand}" Margin="5,0,0,0">Horizontal</Button>
             <Button Command="{Binding PerpendicularCommand}" Margin="5,0,0,0">Perpendicular</Button>
             <Button Command="{Binding ParallelCommand}" Margin="5,0,0,0">Parallel</Button>
         </StackPanel>
-        <Canvas Background="White" Grid.Row="2" MouseDown="Canvas_MouseDown" Cursor="{Binding CanvasCursor}"
+        <Canvas Background="White" Grid.Row="3" MouseDown="Canvas_MouseDown" Cursor="{Binding CanvasCursor}"
                 MouseMove="Canvas_MouseMove" SnapsToDevicePixels="True" ClipToBounds="True"
                 Focusable="True" KeyDown="Canvas_KeyDown">
             <ItemsControl ItemsSource="{Binding Entities}">
@@ -50,6 +55,6 @@
                 </ItemsControl.ItemContainerStyle>
             </ItemsControl>
         </Canvas>
-        <TextBlock Grid.Row="3" Text="{Binding Status}" Margin="5"/>
+        <TextBlock Grid.Row="4" Text="{Binding Status}" Margin="5"/>
     </Grid>
 </Window>

@@ -43,7 +43,7 @@ namespace Cadoscopia
         {
             InitializeComponent();
 
-            mainViewModel = new MainViewModel();
+            mainViewModel = new MainViewModel(new MainViewModelUserInput());
             DataContext = mainViewModel;
         }
 

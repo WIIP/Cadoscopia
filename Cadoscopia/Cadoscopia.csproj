@@ -57,11 +57,13 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -72,24 +74,28 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Constants.cs" />
-    <Compile Include="Constraints\Constraint.cs" />
-    <Compile Include="Constraints\Equals.cs" />
-    <Compile Include="Constraints\Parallel.cs" />
-    <Compile Include="Constraints\Perpendicular.cs" />
+    <Compile Include="SketchServices\Constraints\Constraint.cs" />
+    <Compile Include="SketchServices\Constraints\Equals.cs" />
+    <Compile Include="SketchServices\Constraints\Parallel.cs" />
+    <Compile Include="SketchServices\Constraints\Perpendicular.cs" />
     <Compile Include="Geometry\Entity.cs" />
     <Compile Include="EntityViewModel.cs" />
     <Compile Include="Geometry\Line.cs" />
     <Compile Include="Geometry\Point.cs" />
     <Compile Include="Geometry\Vector.cs" />
+    <Compile Include="IMainViewModelUserInput.cs" />
+    <Compile Include="IO\GenericXmlSerializer.cs" />
     <Compile Include="LineViewModel.cs" />
     <Compile Include="MainViewModel.cs" />
+    <Compile Include="MainViewModelUserInput.cs" />
     <Compile Include="Pluralize.cs" />
     <Compile Include="SketchServices\Parameter.cs" />
     <Compile Include="PointViewModel.cs" />
-    <Compile Include="SketchServices\Entity.cs" />
-    <Compile Include="SketchServices\Line.cs" />
-    <Compile Include="SketchServices\Point.cs" />
+    <Compile Include="SketchServices\Constraints\Entity.cs" />
+    <Compile Include="SketchServices\Constraints\Line.cs" />
+    <Compile Include="SketchServices\Constraints\Point.cs" />
     <Compile Include="SketchServices\Sketch.cs" />
+    <Compile Include="SketchServices\SketchObject.cs" />
     <Compile Include="Solver.cs" />
     <Compile Include="Wpf\ViewModelCollection.cs" />
     <Compile Include="Wpf\RelayCommand.cs" />
@@ -138,6 +144,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Box.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="SketchServices\Entities\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Accord.3.3.0\build\Accord.targets" Condition="Exists('..\packages\Accord.3.3.0\build\Accord.targets')" />

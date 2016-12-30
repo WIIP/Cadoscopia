@@ -23,20 +23,24 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using Cadoscopia.Constraints;
+using Cadoscopia.IO;
 using Cadoscopia.Properties;
 using Cadoscopia.SketchServices;
+using Cadoscopia.SketchServices.Constraints;
 using Cadoscopia.Wpf;
 using JetBrains.Annotations;
-using Point = Cadoscopia.SketchServices.Point;
+using Point = Cadoscopia.SketchServices.Constraints.Point;
 
 namespace Cadoscopia
 {
     public class MainViewModel : ViewModel
     {
+        readonly IMainViewModelUserInput userInput;
+
         #region Fields
 
         Cursor canvasCursor;
@@ -91,12 +95,18 @@ namespace Cadoscopia
 
         public ICommand ParallelCommand { get; }
 
+        public ICommand SaveCommand { get; }
+
         #endregion
 
         #region Constructors
 
-        public MainViewModel()
+        public MainViewModel([NotNull] IMainViewModelUserInput userInput)
         {
+            if (userInput == null) throw new ArgumentNullException(nameof(userInput));
+
+            this.userInput = userInput;
+
             Entities = new ViewModelCollection<EntityViewModel, Entity>(sketch.Entities, EntityViewModelCreator);
 
             HorizontalCommand = new RelayCommand(HorizontalCommandExecute, HorizontalVerticalCommandCanExecute);
@@ -104,6 +114,15 @@ namespace Cadoscopia
             PerpendicularCommand = new RelayCommand(PerpendicularCommandExecute, PerpendicularCommandCanExecute);
             VerticalCommand = new RelayCommand(VerticalCommandExecute, HorizontalVerticalCommandCanExecute);
             LineCommand = new RelayCommand(LineCommandExecute);
+            SaveCommand = new RelayCommand(SaveCommandExecute);
+        }
+
+        void SaveCommandExecute(object obj)
+        {
+            string fileName = userInput.GetSaveFileName();
+            if (fileName == null) return;
+            var gxs = new GenericXmlSerializer<Sketch>();
+            gxs.Write(sketch, fileName);
         }
 
         /// <summary>
@@ -155,7 +174,7 @@ namespace Cadoscopia
 
         bool HorizontalVerticalCommandCanExecute(object obj)
         {
-            return Constraints.Equals.IsApplicable(selection.Select(vm => vm.SketchEntity));
+            return SketchServices.Constraints.Equals.IsApplicable(selection.Select(vm => vm.SketchEntity));
         }
 
         void LineCommandExecute(object obj)
@@ -182,16 +201,13 @@ namespace Cadoscopia
                 if (!(evm is T)) continue;
                 if (evm.SketchEntity == entityInProgress) continue;
                 
-                
                 double d = evm.SketchEntity.Geometry.GetDistanceTo(gePoint);
                 if (d > Constants.SELECTION_DISTANCE) continue;
                 var pvm = evm as PointViewModel;
-                if (pvm != null && entityInProgress is Line)
-                {
-                    var lineInProgress = (Line)entityInProgress;
-                    if (pvm.Point == lineInProgress.Start || pvm.Point == lineInProgress.End)
-                        continue;
-                }
+                if (pvm == null || !(entityInProgress is Line)) return (T) evm;
+                var lineInProgress = (Line)entityInProgress;
+                if (pvm.Point == lineInProgress.Start || pvm.Point == lineInProgress.End)
+                    continue;
                 return (T) evm;
             }
             return null;
@@ -262,7 +278,6 @@ namespace Cadoscopia
                                 sketchLineInProgress.End.X.Value = position.X;
                                 sketchLineInProgress.End.Y.Value = position.Y;
                                 // Update entities which share this point
-                                // TODO Does not work
                                 IEnumerable<LineViewModel> lines = Entities.OfType<LineViewModel>().Where(lvm => lvm.SketchLine != sketchLineInProgress && (lvm.Start.Point == pointAtPosition.Point || lvm.End.Point == pointAtPosition.Point));
                                 foreach (LineViewModel lvm in lines)
                                     lvm.UpdateBindings();

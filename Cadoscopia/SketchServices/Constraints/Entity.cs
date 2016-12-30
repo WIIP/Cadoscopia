@@ -20,27 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using Cadoscopia.SketchServices;
+using System.Diagnostics;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
-namespace Cadoscopia.Constraints
+namespace Cadoscopia.SketchServices.Constraints
 {
-    public abstract class Constraint
+    // ReSharper disable once UseNameofExpression
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
+    public abstract class Entity: SketchObject, IXmlSerializable
     {
-        #region Fields
-
-        protected readonly List<Parameter> parameters = new List<Parameter>();
-
-        #endregion
-
         #region Properties
 
-        public abstract double Error { get; }
+        string DebuggerDisplay => $"{Geometry.GetType().Name}: {Id}";
 
-        internal ReadOnlyCollection<Parameter> Parameters => new ReadOnlyCollection<Parameter>(parameters);
+        public abstract Geometry.Entity Geometry { get; }
 
-        public virtual bool UseSharedParameters => false;
+        public XmlSchema GetSchema()
+        {
+            return null;
+        }
+
+        public void ReadXml(XmlReader reader)
+        {
+            string attribute = reader.GetAttribute(nameof(Id));
+            if (attribute != null) Id = int.Parse(attribute);
+        }
+
+        public void WriteXml(XmlWriter writer)
+        {
+            writer.WriteAttributeString(nameof(Id), Id.ToString());
+        }
 
         #endregion
     }

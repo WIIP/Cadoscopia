@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using Cadoscopia.SketchServices;
+using Cadoscopia.SketchServices.Constraints;
 using JetBrains.Annotations;
 
 namespace Cadoscopia

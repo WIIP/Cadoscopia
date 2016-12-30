@@ -23,68 +23,33 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cadoscopia.Geometry;
 using JetBrains.Annotations;
-using Entity = Cadoscopia.SketchServices.Entity;
-using Line = Cadoscopia.SketchServices.Line;
 
-namespace Cadoscopia.Constraints
+namespace Cadoscopia.SketchServices.Constraints
 {
-    public class Parallel : Constraint
+    class Equals : Constraint
     {
-        #region Fields
+        public Equals([NotNull] Parameter first, [NotNull] Parameter second)
+        {
+            if (first == null) throw new ArgumentNullException(nameof(first));
+            if (second == null) throw new ArgumentNullException(nameof(second));
 
-        [NotNull] readonly Line line1;
-
-        [NotNull] readonly Line line2;
-
-        #endregion
-
-        #region Properties
+            parameters.Add(first);
+            parameters.Add(second);
+        }
 
         public override double Error
         {
             get
             {
-                Vector dir1 = ((Geometry.Line) line1.Geometry).Direction;
-                Vector dir2 = ((Geometry.Line) line2.Geometry).Direction;
-                double desc = dir1.Y * dir2.X - dir1.X * dir2.Y;
-                return desc * desc;
+                double diff = Parameters[0].Value - Parameters[1].Value;
+                return diff * diff;
             }
         }
 
-        #endregion
-
-        #region Constructors
-
-        public Parallel([NotNull] Line line1, [NotNull] Line line2)
-        {
-            if (line1 == null) throw new ArgumentNullException(nameof(line1));
-            if (line2 == null) throw new ArgumentNullException(nameof(line2));
-
-            this.line1 = line1;
-            this.line2 = line2;
-
-            parameters.Add(line1.Start.X);
-            parameters.Add(line1.Start.Y);
-            parameters.Add(line1.End.X);
-            parameters.Add(line1.End.Y);
-
-            parameters.Add(line2.Start.X);
-            parameters.Add(line2.Start.Y);
-            parameters.Add(line2.End.X);
-            parameters.Add(line2.End.Y);
-        }
-
-        #endregion
-
-        #region Methods
-
         public static bool IsApplicable(IEnumerable<Entity> entities)
         {
-            return entities.OfType<Line>().Count() == 2;
+            return entities.OfType<Line>().Any();
         }
-
-        #endregion
     }
 }

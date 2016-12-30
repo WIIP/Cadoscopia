@@ -23,7 +23,7 @@
 using System;
 using JetBrains.Annotations;
 
-namespace Cadoscopia.SketchServices
+namespace Cadoscopia.SketchServices.Constraints
 {
     public class Line : Entity
     {
@@ -34,7 +34,7 @@ namespace Cadoscopia.SketchServices
         public override Geometry.Entity Geometry => new Geometry.Line(new Geometry.Point(Start.X.Value, Start.Y.Value),
             new Geometry.Point(End.X.Value, End.Y.Value));
 
-        public Point Start { get; }
+        public Point Start { get; set; }
 
         #endregion
 

@@ -21,66 +21,65 @@
 // SOFTWARE.
 
 using System;
-using System.Diagnostics;
-using System.Windows.Media;
-using Cadoscopia.SketchServices;
-using Cadoscopia.SketchServices.Constraints;
-using Cadoscopia.Wpf;
+using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 
-namespace Cadoscopia
+namespace Cadoscopia.SketchServices.Constraints
 {
-    // ReSharper disable once UseNameofExpression
-    [DebuggerDisplay("{DebuggerDisplay,nq}")]
-    public abstract class EntityViewModel : ViewModel
+    public class Perpendicular : Constraint
     {
         #region Fields
 
-        bool isSelected;
+        [NotNull] readonly Line line1;
+
+        [NotNull] readonly Line line2;
 
         #endregion
 
         #region Properties
 
-        public Brush Color => new SolidColorBrush(IsSelected
-            ? Constants.SELECTED_ENTITY_COLOR
-            : Constants.ENTITY_COLOR);
-
-        string DebuggerDisplay => $"{SketchEntity.Geometry.GetType().Name}: {SketchEntity.Id}";
-
-        [UsedImplicitly]
-        public bool IsSelected
+        public override double Error
         {
-            get { return isSelected; }
-            set
+            get
             {
-                if (value == isSelected) return;
-                isSelected = value;
-                OnPropertyChanged(nameof(IsSelected));
-                OnPropertyChanged(nameof(Color));
+                double dotProduct =
+                    ((Geometry.Line) line1.Geometry).Direction.DotProduct(((Geometry.Line) line2.Geometry).Direction);
+                return dotProduct * dotProduct;
             }
         }
 
-        [UsedImplicitly]
-        public abstract double Left { get; set; }
+        #endregion
 
-        public Entity SketchEntity { get; protected set; }
+        #region Constructors
 
-        [UsedImplicitly]
-        public abstract double Top { get; set; }
+        public Perpendicular([NotNull] Line line1, [NotNull] Line line2)
+        {
+            if (line1 == null) throw new ArgumentNullException(nameof(line1));
+            if (line2 == null) throw new ArgumentNullException(nameof(line2));
+
+            this.line1 = line1;
+            this.line2 = line2;
+
+            parameters.Add(line1.Start.X);
+            parameters.Add(line1.Start.Y);
+            parameters.Add(line1.End.X);
+            parameters.Add(line1.End.Y);
+
+            parameters.Add(line2.Start.X);
+            parameters.Add(line2.Start.Y);
+            parameters.Add(line2.End.X);
+            parameters.Add(line2.End.Y);
+        }
 
         #endregion
 
-        protected EntityViewModel([NotNull] Entity sketchEntity)
-        {
-            if (sketchEntity == null) throw new ArgumentNullException(nameof(sketchEntity));
-
-            SketchEntity = sketchEntity;
-        }
-
         #region Methods
 
-        public abstract void UpdateBindings();
+        public static bool IsApplicable(IEnumerable<Entity> entities)
+        {
+            return entities.OfType<Line>().Count() == 2;
+        }
 
         #endregion
     }

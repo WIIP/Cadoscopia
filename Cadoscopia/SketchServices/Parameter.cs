@@ -32,7 +32,8 @@ namespace Cadoscopia.SketchServices
     {
         #region Properties
 
-        [XmlAttribute, DefaultValue(0)]
+        [XmlAttribute]
+        [DefaultValue(0)]
         public double Value { get; set; }
 
         #endregion

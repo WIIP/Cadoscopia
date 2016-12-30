@@ -20,38 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using JetBrains.Annotations;
+using System.IO;
+using Cadoscopia;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Cadoscopia.SketchServices
+namespace Tests
 {
-    public class Point : Entity
+    [TestClass]
+    public class MainViewModelTest
     {
-        #region Properties
+        #region Types
 
-        public override Geometry.Entity Geometry => new Geometry.Point(X.Value, Y.Value);
+        class UserInput : IMainViewModelUserInput
+        {
+            #region Methods
 
-        public Parameter X { get; }
+            public string GetSaveFileName()
+            {
+                return Path.GetTempFileName();
+            }
 
-        public Parameter Y { get; }
+            #endregion
+        }
 
         #endregion
 
-        #region Constructors
+        #region Methods
 
-        public Point()
+        [TestMethod]
+        public void TestSaveCommand()
         {
-            X = new Parameter();
-            Y = new Parameter();
-        }
-
-        public Point([NotNull] Parameter x, [NotNull] Parameter y)
-        {
-            if (x == null) throw new ArgumentNullException(nameof(x));
-            if (y == null) throw new ArgumentNullException(nameof(y));
-
-            X = x;
-            Y = y;
+            var sut = new MainViewModel(new UserInput());
+            sut.SaveCommand.Execute(null);
         }
 
         #endregion

@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Cadoscopia.Constraints;
 using Cadoscopia.SketchServices;
+using Cadoscopia.SketchServices.Constraints;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Tests.Constraints
