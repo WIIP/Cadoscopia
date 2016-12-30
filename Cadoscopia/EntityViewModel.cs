@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Windows.Media;
 using Cadoscopia.SketchServices;
 using Cadoscopia.Wpf;
@@ -54,13 +55,22 @@ namespace Cadoscopia
             }
         }
 
+        [UsedImplicitly]
         public abstract double Left { get; set; }
 
         public Entity SketchEntity { get; protected set; }
 
+        [UsedImplicitly]
         public abstract double Top { get; set; }
 
         #endregion
+
+        protected EntityViewModel([NotNull] Entity sketchEntity)
+        {
+            if (sketchEntity == null) throw new ArgumentNullException(nameof(sketchEntity));
+
+            SketchEntity = sketchEntity;
+        }
 
         #region Methods
 

@@ -29,7 +29,7 @@ namespace Cadoscopia.SketchServices
     {
         #region Properties
 
-        public Point End { get; }
+        public Point End { get; set; }
 
         public override Geometry.Entity Geometry => new Geometry.Line(new Geometry.Point(Start.X.Value, Start.Y.Value),
             new Geometry.Point(End.X.Value, End.Y.Value));

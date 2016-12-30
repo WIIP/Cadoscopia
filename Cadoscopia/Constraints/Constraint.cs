@@ -40,6 +40,8 @@ namespace Cadoscopia.Constraints
 
         internal ReadOnlyCollection<Parameter> Parameters => new ReadOnlyCollection<Parameter>(parameters);
 
+        public virtual bool UseSharedParameters => false;
+
         #endregion
     }
 }

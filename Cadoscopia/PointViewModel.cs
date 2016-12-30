@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using Cadoscopia.SketchServices;
 using JetBrains.Annotations;
 
@@ -38,7 +37,7 @@ namespace Cadoscopia
 
         #region Properties
 
-        Point Point => (Point)SketchEntity;
+        public Point Point => (Point)SketchEntity;
 
         [UsedImplicitly]
         public override double Left
@@ -88,17 +87,8 @@ namespace Cadoscopia
 
         #region Constructors
 
-        public PointViewModel()
+        public PointViewModel(Point point) : base(point)
         {
-            SketchEntity = new Point();
-        }
-
-        public PointViewModel([NotNull] Parameter x, [NotNull] Parameter y)
-        {
-            if (x == null) throw new ArgumentNullException(nameof(x));
-            if (y == null) throw new ArgumentNullException(nameof(y));
-
-            SketchEntity = new Point(x, y);
         }
 
         #endregion

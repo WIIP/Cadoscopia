@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -42,13 +43,15 @@ namespace Cadoscopia
 
         readonly List<Constraint> constraints = new List<Constraint>();
 
-        EntityViewModel entityViewModel;
+        Entity entityInProgress;
 
         readonly HashSet<EntityViewModel> selection = new HashSet<EntityViewModel>();
 
         string status = Resources.Ready;
 
         int step;
+
+        readonly Sketch sketch = new Sketch();
 
         #endregion
 
@@ -94,13 +97,29 @@ namespace Cadoscopia
 
         public MainViewModel()
         {
-            Entities = new ObservableCollection<EntityViewModel>();
+            Entities = new ViewModelCollection<EntityViewModel, Entity>(sketch.Entities, EntityViewModelCreator);
 
             HorizontalCommand = new RelayCommand(HorizontalCommandExecute, HorizontalVerticalCommandCanExecute);
             ParallelCommand = new RelayCommand(ParallelCommandExecute, ParallelCommandCommandCanExecute);
             PerpendicularCommand = new RelayCommand(PerpendicularCommandExecute, PerpendicularCommandCanExecute);
             VerticalCommand = new RelayCommand(VerticalCommandExecute, HorizontalVerticalCommandCanExecute);
             LineCommand = new RelayCommand(LineCommandExecute);
+        }
+
+        /// <summary>
+        /// Create an appropriate ViewModel each time an entity is added to the sketch.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        EntityViewModel EntityViewModelCreator([NotNull] Entity entity)
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            var line = entity as Line;
+            if (line != null) return new LineViewModel(line);
+            var point = entity as Point;
+            if (point != null) return new PointViewModel(point);
+            throw new NotSupportedException();
         }
 
         bool ParallelCommandCommandCanExecute(object obj)
@@ -141,7 +160,8 @@ namespace Cadoscopia
 
         void LineCommandExecute(object obj)
         {
-            entityViewModel = new LineViewModel();
+            // The line will be added to the canvas at first click.
+            entityInProgress = new Line();
             step = 0;
             Status = Resources.LineFirstPoint;
             CanvasCursor = Cursors.Cross;
@@ -153,28 +173,29 @@ namespace Cadoscopia
         /// <param name="point"></param>
         /// <returns></returns>
         [CanBeNull]
-        EntityViewModel EntityAtPoint(System.Windows.Point point)
+        T EntityAtPoint<T>(System.Windows.Point point) where T: EntityViewModel
         {
             var gePoint = new Geometry.Point(point.X, point.Y);
             for (int i = Entities.Count - 1; i >= 0; i--)
             {
                 EntityViewModel evm = Entities[i];
+                if (!(evm is T)) continue;
                 double d = evm.SketchEntity.Geometry.GetDistanceTo(gePoint);
                 if (d > Constants.SELECTION_DISTANCE) continue;
-                return evm;
+                return (T) evm;
             }
             return null;
         }
 
         public void OnCanvasClick(System.Windows.Point position, bool shiftPressed)
         {
-            if (entityViewModel == null)
+            if (entityInProgress == null)
             {
                 // We are in selection mode.
                 if (!shiftPressed)
                     ClearSelection();
 
-                EntityViewModel entityAtPoint = EntityAtPoint(position);
+                var entityAtPoint = EntityAtPoint<EntityViewModel>(position);
                 if (entityAtPoint != null)
                 {
                     entityAtPoint.IsSelected = !entityAtPoint.IsSelected;
@@ -207,42 +228,64 @@ namespace Cadoscopia
             }
             else
             {
-                var lineViewModel = entityViewModel as LineViewModel;
+                var sketchLine = entityInProgress as Line;
                 // ReSharper disable once InvertIf
-                if (lineViewModel != null)
+                if (sketchLine != null)
                 {
                     switch (step)
                     {
                         case 0:
-                            lineViewModel.X1 = lineViewModel.X2 = position.X;
-                            lineViewModel.Y1 = lineViewModel.Y2 = position.Y;
-
+                            sketchLine.Start.X.Value = sketchLine.End.X.Value = position.X;
+                            sketchLine.Start.Y.Value = sketchLine.End.Y.Value = position.Y;
+                            AddLineToSketch(sketchLine);
                             Status = Resources.LineSecondPoint;
 
                             step++;
                             break;
 
                         default:
-                            lineViewModel.X2 = position.X;
-                            lineViewModel.Y2 = position.Y;
+                            //var entityAtPoint = EntityAtPoint<PointViewModel>(position);
+                            //if (entityAtPoint != null)
+                            //{
+                            //    sketch.Entities.Remove(sketchLine.End);
+                            //    sketchLine.End = entityAtPoint.Point;
+                            //}
+                            
+                            sketchLine.End.X.Value = position.X;
+                            sketchLine.End.Y.Value = position.Y;
+                            UpdateBinding(sketchLine);
+                            UpdateBinding(sketchLine.End);
 
+                            //if (entityAtPoint != null)
+                            //    StopCommand();
+                            //else
+                            //{
                             Status = Resources.NextPoint;
-
-                            Point sketchLineEnd = lineViewModel.SketchLine.End;
-                            entityViewModel = new LineViewModel(sketchLineEnd.X, sketchLineEnd.Y);
-
+                            Point sketchLineEnd = sketchLine.End;
+                            entityInProgress = new Line(sketchLineEnd.X, sketchLineEnd.Y);
+                            // Add the line here, as we know its starting point
+                            AddLineToSketch((Line) entityInProgress);
                             step++;
+                            //}
                             break;
                     }
-
-                    // Important: points are added last so that they are drawn on top and selected first.
-                    Entities.Add(entityViewModel);
-                    Entities.Add(lineViewModel.Start);
-                    Entities.Add(lineViewModel.End);
-
-                    UpdateBindings();
                 }
             }
+        }
+
+        void AddLineToSketch([NotNull] Line sketchLine)
+        {
+            if (sketchLine == null) throw new ArgumentNullException(nameof(sketchLine));
+
+            // Important: points are added last so that they are drawn on top and selected first.
+            sketch.Entities.Add(sketchLine);
+            UpdateBinding(sketchLine);
+
+            sketch.Entities.Add(sketchLine.Start);
+            UpdateBinding(sketchLine.Start);
+
+            sketch.Entities.Add(sketchLine.End);
+            UpdateBinding(sketchLine.End);
         }
 
         void ClearSelection()
@@ -254,38 +297,56 @@ namespace Cadoscopia
 
         public void OnCanvasMove(System.Windows.Point position)
         {
-            var lineViewModel = entityViewModel as LineViewModel;
+            var sketchLine = entityInProgress as Line;
             // ReSharper disable once InvertIf
-            if (lineViewModel != null && step > 0)
+            if (sketchLine != null && step > 0)
             {
-                lineViewModel.X2 = position.X;
-                lineViewModel.Y2 = position.Y;
+                sketchLine.End.X.Value = position.X;
+                sketchLine.End.Y.Value = position.Y;
 
-                UpdateBindings();
+                UpdateBinding(sketchLine);
+                UpdateBinding(sketchLine.End);
             }
         }
 
-        public void OnKeyDown(Key key)
+        void UpdateBinding([NotNull] Entity entity)
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            Entities.First(evm => evm.SketchEntity == entity).UpdateBindings();
+        }
+
+        public void OnCanvasKeyDown(Key key)
         {
             switch (key)
             {
                 case Key.Escape:
-                    if (entityViewModel != null)
-                    {
-                        Entities.Remove(entityViewModel);
-                        var lineViewModel = entityViewModel as LineViewModel;
-                        if (lineViewModel != null)
-                        {
-                            Entities.Remove(lineViewModel.Start);
-                            Entities.Remove(lineViewModel.End);
-                        }
-                        entityViewModel = null;
-                        CanvasCursor = Cursors.Arrow;
-                        Status = Resources.Ready;
-                    }
-                    step = 0;
+                    StopCommand();
                     break;
             }
+        }
+
+        void StopCommand()
+        {
+            if (entityInProgress != null)
+            {
+                sketch.Entities.Remove(entityInProgress);
+                var lineViewModel = entityInProgress as Line;
+                if (lineViewModel != null)
+                {
+                    sketch.Entities.Remove(lineViewModel.Start);
+                    sketch.Entities.Remove(lineViewModel.End);
+                }
+                Reinit();
+            }
+            step = 0;
+        }
+
+        void Reinit()
+        {
+            entityInProgress = null;
+            CanvasCursor = Cursors.Arrow;
+            Status = Resources.Ready;
         }
 
         bool PerpendicularCommandCanExecute(object obj)

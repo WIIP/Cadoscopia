@@ -105,23 +105,10 @@ namespace Cadoscopia
 
         #region Constructors
 
-        public LineViewModel()
+        public LineViewModel(Line line) : base(line)
         {
-            SketchEntity = new Line();
-            Start = new PointViewModel(SketchLine.Start.X, SketchLine.Start.Y);
-            End = new PointViewModel(SketchLine.End.X, SketchLine.End.Y);
-        }
-
-        /// <summary>
-        /// Constructor for creating a new line starting at the end of a previous line.
-        /// </summary>
-        /// <param name="startX"></param>
-        /// <param name="startY"></param>
-        public LineViewModel(Parameter startX, Parameter startY)
-        {
-            SketchEntity = new Line(startX, startY);
-            Start = new PointViewModel(SketchLine.Start.X, SketchLine.Start.Y);
-            End = new PointViewModel(SketchLine.End.X, SketchLine.End.Y);
+            Start = new PointViewModel(line.Start);
+            End = new PointViewModel(line.End);
         }
 
         #endregion

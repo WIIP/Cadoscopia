@@ -47,7 +47,9 @@ namespace Cadoscopia
             if (constraints.Count == 0)
                 throw new ArgumentException(@"Value cannot be an empty collection.", nameof(constraints));
 
-            Parameter[] parameters = constraints.SelectMany(c => c.Parameters).ToArray();
+            Parameter[] parameters = constraints.Where(c => !c.UseSharedParameters)
+                .SelectMany(c => c.Parameters).ToArray();
+            if (!parameters.Any()) return true;
 
             Func<double[], double> objective = args => {
                 for (int i = 0; i < args.Length; i++)

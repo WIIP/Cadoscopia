@@ -53,7 +53,7 @@ namespace Cadoscopia
 
         void Canvas_KeyDown(object sender, KeyEventArgs e)
         {
-            mainViewModel.OnKeyDown(e.Key);
+            mainViewModel.OnCanvasKeyDown(e.Key);
         }
 
         void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
