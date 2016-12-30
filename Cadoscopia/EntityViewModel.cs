@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using System.Diagnostics;
 using System.Windows.Media;
 using Cadoscopia.SketchServices;
 using Cadoscopia.Wpf;
@@ -28,6 +29,8 @@ using JetBrains.Annotations;
 
 namespace Cadoscopia
 {
+    // ReSharper disable once UseNameofExpression
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public abstract class EntityViewModel : ViewModel
     {
         #region Fields
@@ -41,6 +44,8 @@ namespace Cadoscopia
         public Brush Color => new SolidColorBrush(IsSelected
             ? Constants.SELECTED_ENTITY_COLOR
             : Constants.ENTITY_COLOR);
+
+        string DebuggerDisplay => $"{SketchEntity.Geometry.GetType().Name}: {SketchEntity.Id}";
 
         [UsedImplicitly]
         public bool IsSelected

@@ -180,8 +180,18 @@ namespace Cadoscopia
             {
                 EntityViewModel evm = Entities[i];
                 if (!(evm is T)) continue;
+                if (evm.SketchEntity == entityInProgress) continue;
+                
+                
                 double d = evm.SketchEntity.Geometry.GetDistanceTo(gePoint);
                 if (d > Constants.SELECTION_DISTANCE) continue;
+                var pvm = evm as PointViewModel;
+                if (pvm != null && entityInProgress is Line)
+                {
+                    var lineInProgress = (Line)entityInProgress;
+                    if (pvm.Point == lineInProgress.Start || pvm.Point == lineInProgress.End)
+                        continue;
+                }
                 return (T) evm;
             }
             return null;
@@ -228,45 +238,52 @@ namespace Cadoscopia
             }
             else
             {
-                var sketchLine = entityInProgress as Line;
+                var sketchLineInProgress = entityInProgress as Line;
                 // ReSharper disable once InvertIf
-                if (sketchLine != null)
+                if (sketchLineInProgress != null)
                 {
                     switch (step)
                     {
                         case 0:
-                            sketchLine.Start.X.Value = sketchLine.End.X.Value = position.X;
-                            sketchLine.Start.Y.Value = sketchLine.End.Y.Value = position.Y;
-                            AddLineToSketch(sketchLine);
+                            sketchLineInProgress.Start.X.Value = sketchLineInProgress.End.X.Value = position.X;
+                            sketchLineInProgress.Start.Y.Value = sketchLineInProgress.End.Y.Value = position.Y;
+                            AddLineToSketch(sketchLineInProgress);
                             Status = Resources.LineSecondPoint;
 
                             step++;
                             break;
 
                         default:
-                            //var entityAtPoint = EntityAtPoint<PointViewModel>(position);
-                            //if (entityAtPoint != null)
-                            //{
-                            //    sketch.Entities.Remove(sketchLine.End);
-                            //    sketchLine.End = entityAtPoint.Point;
-                            //}
-                            
-                            sketchLine.End.X.Value = position.X;
-                            sketchLine.End.Y.Value = position.Y;
-                            UpdateBinding(sketchLine);
-                            UpdateBinding(sketchLine.End);
+                            var pointAtPosition = EntityAtPoint<PointViewModel>(position);
+                            if (pointAtPosition != null)
+                            {
+                                sketch.Entities.Remove(sketchLineInProgress.End);
+                                sketchLineInProgress.End = pointAtPosition.Point;
+                                sketchLineInProgress.End.X.Value = position.X;
+                                sketchLineInProgress.End.Y.Value = position.Y;
+                                // Update entities which share this point
+                                // TODO Does not work
+                                IEnumerable<LineViewModel> lines = Entities.OfType<LineViewModel>().Where(lvm => lvm.SketchLine != sketchLineInProgress && (lvm.Start.Point == pointAtPosition.Point || lvm.End.Point == pointAtPosition.Point));
+                                foreach (LineViewModel lvm in lines)
+                                    lvm.UpdateBindings();
+                            }
 
-                            //if (entityAtPoint != null)
-                            //    StopCommand();
-                            //else
-                            //{
-                            Status = Resources.NextPoint;
-                            Point sketchLineEnd = sketchLine.End;
-                            entityInProgress = new Line(sketchLineEnd.X, sketchLineEnd.Y);
-                            // Add the line here, as we know its starting point
-                            AddLineToSketch((Line) entityInProgress);
-                            step++;
-                            //}
+                            sketchLineInProgress.End.X.Value = position.X;
+                            sketchLineInProgress.End.Y.Value = position.Y;
+                            UpdateBinding(sketchLineInProgress);
+                            UpdateBinding(sketchLineInProgress.End);
+
+                            if (pointAtPosition != null)
+                                Reinit();
+                            else
+                            {
+                                Status = Resources.NextPoint;
+                                Point sketchLineEnd = sketchLineInProgress.End;
+                                entityInProgress = new Line(sketchLineEnd.X, sketchLineEnd.Y);
+                                // Add the line here, as we know its starting point
+                                AddLineToSketch((Line) entityInProgress);
+                                step++;
+                            }
                             break;
                     }
                 }
@@ -326,6 +343,9 @@ namespace Cadoscopia
             }
         }
 
+        /// <summary>
+        /// Stop the command in progress.
+        /// </summary>
         void StopCommand()
         {
             if (entityInProgress != null)

@@ -20,13 +20,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Diagnostics;
+
 namespace Cadoscopia.SketchServices
 {
+    // ReSharper disable once UseNameofExpression
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public abstract class Entity
     {
+        #region Constants
+
+        const int INVALID_ID = -1;
+
+        #endregion
+
+        #region Fields
+
+        #endregion
+
         #region Properties
 
+        string DebuggerDisplay => $"{Geometry.GetType().Name}: {Id}";
+
         public abstract Geometry.Entity Geometry { get; }
+
+        /// <summary>
+        /// Id of this entity.
+        /// </summary>
+        /// <remarks>
+        /// Each entity has a different id. Ids start at zero.
+        /// </remarks>
+        public int Id { get; internal set; } = INVALID_ID;
 
         #endregion
     }

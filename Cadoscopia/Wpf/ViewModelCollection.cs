@@ -30,10 +30,12 @@ using JetBrains.Annotations;
 
 namespace Cadoscopia.Wpf
 {
-    // TODO Prohibit the addition or deletion directly to this collection because the changes will not be propagated to the model
-
     /// <summary>
-    /// Allow to synchronize a ViewModel collection with a Model collection.
+    /// Allow to synchronize a ViewModel collection with a Model collection. 
+    /// 
+    /// Each time a Model is added to the wrapped collection, a new ViewModel is created with 
+    /// the factory passed in the constructor. And if a Model is removed, the corresponding 
+    /// ViewModel is also removed from this collection.
     /// </summary>
     /// <typeparam name="TViewModel"></typeparam>
     /// <typeparam name="TModel"></typeparam>
@@ -65,18 +67,13 @@ namespace Cadoscopia.Wpf
 
         #region Methods
 
-        TViewModel CreateViewModel(TModel model)
-        {
-            return viewModelFactory(model);
-        }
-
         void OnSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
                     for (int i = 0; i < e.NewItems.Count; i++)
-                        Insert(e.NewStartingIndex + i, CreateViewModel((TModel) e.NewItems[i]));
+                        Insert(e.NewStartingIndex + i, viewModelFactory((TModel) e.NewItems[i]));
                     break;
 
                 case NotifyCollectionChangedAction.Move:
@@ -99,17 +96,14 @@ namespace Cadoscopia.Wpf
                     break;
 
                 case NotifyCollectionChangedAction.Replace:
-                    // remove
                     for (int i = 0; i < e.OldItems.Count; i++)
                         RemoveAt(e.OldStartingIndex);
-
-                    // add
                     goto case NotifyCollectionChangedAction.Add;
 
                 case NotifyCollectionChangedAction.Reset:
                     Clear();
                     foreach (object newItem in e.NewItems)
-                        Add(CreateViewModel((TModel) newItem));
+                        Add(viewModelFactory((TModel) newItem));
                     break;
 
                 default:
