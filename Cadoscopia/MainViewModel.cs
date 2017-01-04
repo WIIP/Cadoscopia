@@ -392,8 +392,10 @@ namespace Cadoscopia
                 var lineViewModel = entityInProgress as Line;
                 if (lineViewModel != null)
                 {
-                    sketch.Entities.Remove(lineViewModel.Start);
-                    sketch.Entities.Remove(lineViewModel.End);
+                    if (sketch.CountReferences(lineViewModel.Start) == 1)
+                        sketch.Entities.Remove(lineViewModel.Start);
+                    if (sketch.CountReferences(lineViewModel.End) == 1)
+                        sketch.Entities.Remove(lineViewModel.End);
                 }
                 Reinit();
             }

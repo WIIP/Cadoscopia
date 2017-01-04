@@ -64,6 +64,19 @@ namespace Cadoscopia.Parametric.SketchServices
             return point;
         }
 
+        public int CountReferences(Point point)
+        {
+            int count = 1;
+            foreach (Entity entity in Entities)
+            {
+                var line = entity as Line;
+                if (line == null) continue;
+                if (line.Start == point) count++;
+                if (line.End == point) count++;
+            }
+            return count;
+        }
+
         /// <summary>
         /// Returns the entity which is near the passed point or null if there are no element.
         /// </summary>
@@ -92,7 +105,7 @@ namespace Cadoscopia.Parametric.SketchServices
             bool sketchElementIsEmpty = reader.IsEmptyElement;
             reader.ReadStartElement(nameof(Sketch));
             if (sketchElementIsEmpty) return;
-            
+
             ParameterReferences = new List<Parameter>();
             bool parametersElementIsEmpty = reader.IsEmptyElement;
             reader.ReadStartElement(nameof(Parameters));
