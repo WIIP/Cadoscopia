@@ -20,13 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Cadoscopia
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
+namespace Cadoscopia.Parametric.SketchServices.Entities.Constraints
 {
-    /// <summary>
-    /// Logique d'interaction pour App.xaml
-    /// </summary>
-    public partial class App
+    public abstract class Constraint: Entity
     {
-        public DocumentCollection Documents => new DocumentCollection();
+        #region Fields
+
+        protected readonly List<Parameter> parameters = new List<Parameter>();
+
+        #endregion
+
+        #region Properties
+
+        public abstract double Error { get; }
+
+        internal ReadOnlyCollection<Parameter> Parameters => new ReadOnlyCollection<Parameter>(parameters);
+
+        public virtual bool UseSharedParameters => false;
+
+        #endregion
     }
 }

@@ -22,10 +22,13 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 
-namespace Cadoscopia.SketchServices.Constraints
+namespace Cadoscopia.Parametric.SketchServices
 {
-    public abstract class Constraint: SketchObject
+    public abstract class SketchObject : INotifyPropertyChanging
     {
         #region Fields
 
@@ -35,11 +38,25 @@ namespace Cadoscopia.SketchServices.Constraints
 
         #region Properties
 
-        public abstract double Error { get; }
+        public IEnumerable<Parameter> Parameters => new ReadOnlyCollection<Parameter>(parameters);
 
-        internal ReadOnlyCollection<Parameter> Parameters => new ReadOnlyCollection<Parameter>(parameters);
+        [CanBeNull]
+        public Sketch Sketch { get; internal set; }
 
-        public virtual bool UseSharedParameters => false;
+        #endregion
+
+        #region Events
+
+        public event PropertyChangingEventHandler PropertyChanging;
+
+        #endregion
+
+        #region Methods
+
+        protected void OnPropertyChanging([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
+        }
 
         #endregion
     }

@@ -22,7 +22,7 @@ namespace Cadoscopia.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Cadoscopia.Properties {
         ///   Retourne l'instance ResourceManager mise en cache utilisée par cette classe.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Cadoscopia.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace Cadoscopia.Properties {
         ///   les recherches de ressources à l'aide de cette classe de ressource fortement typée.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,16 +63,25 @@ namespace Cadoscopia.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à {0} entities selected.
         /// </summary>
-        internal static string EntitiesSelected {
+        public static string EntitiesSelected {
             get {
                 return ResourceManager.GetString("EntitiesSelected", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à File.
+        /// </summary>
+        public static string File {
+            get {
+                return ResourceManager.GetString("File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Select line first point:.
         /// </summary>
-        internal static string LineFirstPoint {
+        public static string LineFirstPoint {
             get {
                 return ResourceManager.GetString("LineFirstPoint", resourceCulture);
             }
@@ -81,7 +90,7 @@ namespace Cadoscopia.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Select line second point:.
         /// </summary>
-        internal static string LineSecondPoint {
+        public static string LineSecondPoint {
             get {
                 return ResourceManager.GetString("LineSecondPoint", resourceCulture);
             }
@@ -90,7 +99,7 @@ namespace Cadoscopia.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Next point:.
         /// </summary>
-        internal static string NextPoint {
+        public static string NextPoint {
             get {
                 return ResourceManager.GetString("NextPoint", resourceCulture);
             }
@@ -99,7 +108,7 @@ namespace Cadoscopia.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à No solution found..
         /// </summary>
-        internal static string NoSolutionFound {
+        public static string NoSolutionFound {
             get {
                 return ResourceManager.GetString("NoSolutionFound", resourceCulture);
             }
@@ -108,7 +117,7 @@ namespace Cadoscopia.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à One {0} selected.
         /// </summary>
-        internal static string OneEntitySelected {
+        public static string OneEntitySelected {
             get {
                 return ResourceManager.GetString("OneEntitySelected", resourceCulture);
             }
@@ -117,7 +126,7 @@ namespace Cadoscopia.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Ready.
         /// </summary>
-        internal static string Ready {
+        public static string Ready {
             get {
                 return ResourceManager.GetString("Ready", resourceCulture);
             }
@@ -126,9 +135,18 @@ namespace Cadoscopia.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à selected.
         /// </summary>
-        internal static string Selected {
+        public static string Selected {
             get {
                 return ResourceManager.GetString("Selected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à .
+        /// </summary>
+        public static string String1 {
+            get {
+                return ResourceManager.GetString("String1", resourceCulture);
             }
         }
     }

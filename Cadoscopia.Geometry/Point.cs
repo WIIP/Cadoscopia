@@ -20,42 +20,62 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Cadoscopia.Parametric.SketchServices;
-using Cadoscopia.Parametric.SketchServices.Entities;
-using Cadoscopia.Parametric.SketchServices.Entities.Constraints;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
-namespace Tests.Constraints
+namespace Cadoscopia.Geometry
 {
-    [TestClass]
-    public class PerpendicularTest
+    public class Point : Entity
     {
-        [TestMethod]
-        public void ErrorTest()
+        #region Properties
+
+        public double X { get; }
+
+        public double Y { get; }
+
+        #endregion
+
+        #region Constructors
+
+        public Point(double x, double y)
         {
-            var sketch = new Sketch();
-
-            var p0 = sketch.AddPoint();
-            var p1 = sketch.AddPoint(1, 0);
-            var p2 = sketch.AddPoint(0, 1);
-            var p3 = sketch.AddPoint(1, 1);
-
-            var horizontalLine = new Line(p0, p1);
-
-            var verticalLine = new Line(p0, p2);
-
-            var diagonalLine = new Line(p0, p3);
-
-            {
-                var sut = new Perpendicular(horizontalLine, verticalLine);
-                Assert.AreEqual(sut.Error, 0, "The error should be zero because the 2 lines are perpendicular.");
-            }
-
-            {
-                var sut = new Perpendicular(horizontalLine, diagonalLine);
-                Assert.AreNotEqual(sut.Error, 0,
-                    "The error should not be zero because the 2 lines are not perpendicular.");
-            }
+            X = x;
+            Y = y;
         }
+
+        #endregion
+
+        #region Methods
+
+        public Vector AsVector()
+        {
+            return new Vector(X, Y);
+        }
+
+        public override double GetDistanceTo(Point point)
+        {
+            return Math.Sqrt(Math.Pow(point.X - X, 2) + Math.Pow(point.Y - Y, 2));
+        }
+
+        public Vector GetVector(Point point)
+        {
+            return new Vector(point.X - X, point.Y - Y);
+        }
+
+        public static Point operator +(Point p, Vector v)
+        {
+            return new Point(p.X + v.X, p.Y + v.Y);
+        }
+
+        public static Point operator /(Point p, double value)
+        {
+            return new Point(p.X / value, p.Y  / value);
+        }
+
+        public static Vector operator -(Point p, Point other)
+        {
+            return new Vector(p.X - other.X, p.Y - other.Y);
+        }
+
+        #endregion
     }
 }

@@ -23,8 +23,7 @@
 using System;
 using System.Diagnostics;
 using System.Windows.Media;
-using Cadoscopia.SketchServices;
-using Cadoscopia.SketchServices.Constraints;
+using Cadoscopia.Parametric.SketchServices.Entities;
 using Cadoscopia.Wpf;
 using JetBrains.Annotations;
 
@@ -46,7 +45,7 @@ namespace Cadoscopia
             ? Constants.SELECTED_ENTITY_COLOR
             : Constants.ENTITY_COLOR);
 
-        string DebuggerDisplay => $"{SketchEntity.Geometry.GetType().Name}: {SketchEntity.Id}";
+        string DebuggerDisplay => $"{SketchEntity.Geometry.GetType().Name}";
 
         [UsedImplicitly]
         public bool IsSelected

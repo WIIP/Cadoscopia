@@ -1,4 +1,7 @@
-﻿// MIT License
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+// MIT License
 
 // Copyright(c) 2016 Cadoscopia http://cadoscopia.com
 
@@ -20,45 +23,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Cadoscopia.Geometry
+using System.Linq;
+using JetBrains.Annotations;
+
+namespace Cadoscopia
 {
-    sealed class Line : Entity
+    public class DocumentCollection : INotifyCollectionChanged, IEnumerable<Document>
     {
-        #region Properties
+        #region Fields
 
-        public Vector Direction => Start.GetVector(End).Normalize();
-
-        public Point End { get; }
-
-        public double Length => Start.GetDistanceTo(End);
-
-        public Point Start { get; }
+        readonly List<Document> documents = new List<Document>();
 
         #endregion
 
-        #region Constructors
+        [CanBeNull]
+        public Document ActiveDocument => documents.LastOrDefault();
 
-        public Line(Point start, Point end)
-        {
-            End = end;
-            Start = start;
-        }
+        #region Events
+
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         #endregion
 
         #region Methods
 
-        public Point GetClosestPointTo(Point point)
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            double dotProduct = Direction.DotProduct(point - Start);
-            if (dotProduct < 0) return Start;
-            if (dotProduct > Length) return End;
-            return Start + Direction * dotProduct;
+            return GetEnumerator();
         }
 
-        public override double GetDistanceTo(Point point)
+        public IEnumerator<Document> GetEnumerator()
         {
-            return GetClosestPointTo(point).GetDistanceTo(point);
+            return documents.GetEnumerator();
         }
 
         #endregion

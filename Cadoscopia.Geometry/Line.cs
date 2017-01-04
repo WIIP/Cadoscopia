@@ -20,13 +20,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Cadoscopia
+namespace Cadoscopia.Geometry
 {
-    /// <summary>
-    /// Logique d'interaction pour App.xaml
-    /// </summary>
-    public partial class App
+    public sealed class Line : Entity
     {
-        public DocumentCollection Documents => new DocumentCollection();
+        #region Properties
+
+        public Vector Direction => Start.GetVector(End).Normalize();
+
+        public Point End { get; }
+
+        public double Length => Start.GetDistanceTo(End);
+
+        public Point Start { get; }
+
+        public Point MidPoint => (Start + End.AsVector()) / 2;
+
+        #endregion
+
+        #region Constructors
+
+        public Line(Point start, Point end)
+        {
+            End = end;
+            Start = start;
+        }
+
+        #endregion
+
+        #region Methods
+
+        public Point GetClosestPointTo(Point point)
+        {
+            double dotProduct = Direction.DotProduct(point - Start);
+            if (dotProduct < 0) return Start;
+            if (dotProduct > Length) return End;
+            return Start + Direction * dotProduct;
+        }
+
+        public override double GetDistanceTo(Point point)
+        {
+            return GetClosestPointTo(point).GetDistanceTo(point);
+        }
+
+        #endregion
     }
 }

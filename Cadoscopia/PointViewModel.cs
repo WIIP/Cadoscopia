@@ -20,8 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Cadoscopia.SketchServices;
-using Cadoscopia.SketchServices.Constraints;
+using Cadoscopia.Parametric.SketchServices.Entities;
 using JetBrains.Annotations;
 
 namespace Cadoscopia

@@ -20,13 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Cadoscopia
+using Cadoscopia;
+using Cadoscopia.IO;
+using Cadoscopia.Parametric.SketchServices;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace Tests
 {
-    /// <summary>
-    /// Logique d'interaction pour App.xaml
-    /// </summary>
-    public partial class App
+    [TestClass]
+    public class SharedObjectDocumentTest
     {
-        public DocumentCollection Documents => new DocumentCollection();
+        #region Methods
+
+        [TestMethod]
+        public void XMLSerializationTest()
+        {
+            var sut = new SharedObjectDocument();
+            const string SKETCH_NAME = "Sketch1";
+            var sketch = new Sketch
+            {
+                Name = SKETCH_NAME
+            };
+            sut.Features.Add(sketch);
+            var gxs = new GenericXmlSerializer<SharedObjectDocument>();
+            string xml = gxs.WriteToString(sut);
+            SharedObjectDocument sod = gxs.ReadFromString(xml);
+            Assert.AreEqual(1, sod.Features.Count);
+            Assert.IsInstanceOfType(sod.Features[0], typeof(Sketch));
+            Assert.AreEqual(SKETCH_NAME, ((Sketch) sod.Features[0]).Name);
+        }
+
+        #endregion
     }
 }

@@ -25,11 +25,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Accord.Math.Differentiation;
 using Accord.Math.Optimization;
-using Cadoscopia.SketchServices;
-using Cadoscopia.SketchServices.Constraints;
+using Cadoscopia.Parametric.SketchServices;
+using Cadoscopia.Parametric.SketchServices.Entities.Constraints;
 using JetBrains.Annotations;
 
-namespace Cadoscopia
+namespace Cadoscopia.Parametric
 {
     public static class Solver
     {

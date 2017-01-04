@@ -20,13 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Cadoscopia
+using Cadoscopia.IO;
+using Cadoscopia.Parametric.SketchServices;
+using Cadoscopia.Parametric.SketchServices.Entities;
+using Cadoscopia.Parametric.SketchServices.Entities.Constraints;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace Tests.Parametric.SketchServices
 {
-    /// <summary>
-    /// Logique d'interaction pour App.xaml
-    /// </summary>
-    public partial class App
+    [TestClass]
+    public class SketchTest
     {
-        public DocumentCollection Documents => new DocumentCollection();
+        #region Methods
+
+        [TestMethod]
+        public void TestXmlSerialization()
+        {
+            var before = new Sketch();
+
+            Point p0 = before.AddPoint();
+            Point p1 = before.AddPoint(1, 0);
+            Point p2 = before.AddPoint(0, 1);
+
+            var line1 = new Line(p0, p1);
+            var line2 = new Line(p0, p2);
+
+            new Perpendicular(line1, line2);
+            var gxs = new GenericXmlSerializer<Sketch>();
+            string xml = gxs.WriteToString(before);
+            Sketch after = gxs.ReadFromString(xml);
+            Assert.AreEqual(before.Entities.Count, after.Entities.Count);
+        }
+
+        #endregion
     }
 }

@@ -20,37 +20,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Diagnostics;
-using System.Xml;
-using System.Xml.Schema;
+using System;
+using System.IO;
+using System.IO.Packaging;
+using System.Windows.Input;
 using System.Xml.Serialization;
+using Cadoscopia.Parametric.SketchServices;
 
-namespace Cadoscopia.SketchServices.Constraints
+namespace Cadoscopia.Commands
 {
-    // ReSharper disable once UseNameofExpression
-    [DebuggerDisplay("{DebuggerDisplay,nq}")]
-    public abstract class Entity: SketchObject, IXmlSerializable
+    class OpenCommand : ICommand
     {
-        #region Properties
+        #region Events
 
-        string DebuggerDisplay => $"{Geometry.GetType().Name}: {Id}";
+        public event EventHandler CanExecuteChanged;
 
-        public abstract Geometry.Entity Geometry { get; }
+        #endregion
 
-        public XmlSchema GetSchema()
+        #region Methods
+
+        public bool CanExecute(object parameter)
         {
-            return null;
+            return false;
         }
 
-        public void ReadXml(XmlReader reader)
+        public void Execute(object parameter)
         {
-            string attribute = reader.GetAttribute(nameof(Id));
-            if (attribute != null) Id = int.Parse(attribute);
-        }
-
-        public void WriteXml(XmlWriter writer)
-        {
-            writer.WriteAttributeString(nameof(Id), Id.ToString());
+            using (var package = (ZipPackage) Package.Open(@"C:\Temp\Test.cso"))
+            {
+                foreach (PackagePart part in package.GetParts())
+                {
+                    using (Stream stream = part.GetStream(FileMode.Open))
+                    {
+                        var serializer = new XmlSerializer(typeof(Sketch));
+                        var sketch = (Sketch)serializer.Deserialize(stream);
+                    }
+                }
+            }
         }
 
         #endregion

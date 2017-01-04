@@ -118,33 +118,30 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Ready" xml:space="preserve">
-    <value>Ready</value>
+    <value>Prêt</value>
   </data>
   <data name="OneEntitySelected" xml:space="preserve">
-    <value>One {0} selected</value>
+    <value>Un {0} sélectionné</value>
   </data>
   <data name="EntitiesSelected" xml:space="preserve">
-    <value>{0} entities selected</value>
+    <value>{0} entités sélectionnées</value>
   </data>
   <data name="Selected" xml:space="preserve">
-    <value>selected</value>
+    <value>sélectionné</value>
   </data>
   <data name="NoSolutionFound" xml:space="preserve">
-    <value>No solution found.</value>
+    <value>Aucune solution n'a été trouvée.</value>
   </data>
   <data name="NextPoint" xml:space="preserve">
-    <value>Next point:</value>
+    <value>Point suivant :</value>
   </data>
   <data name="LineSecondPoint" xml:space="preserve">
-    <value>Select line second point:</value>
+    <value>Sélectionnez le deuxième point :</value>
   </data>
   <data name="LineFirstPoint" xml:space="preserve">
-    <value>Select line first point:</value>
+    <value>Sélectionnez le premier point :</value>
   </data>
   <data name="File" xml:space="preserve">
-    <value>File</value>
-  </data>
-  <data name="String1" xml:space="preserve">
-    <value />
+    <value>Fichier</value>
   </data>
 </root>

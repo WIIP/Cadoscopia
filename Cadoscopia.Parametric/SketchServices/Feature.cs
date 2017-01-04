@@ -20,13 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace Cadoscopia
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
+
+namespace Cadoscopia.Parametric.SketchServices
 {
-    /// <summary>
-    /// Logique d'interaction pour App.xaml
-    /// </summary>
-    public partial class App
+    public abstract class Feature : IXmlSerializable
     {
-        public DocumentCollection Documents => new DocumentCollection();
+        #region Properties
+
+        [XmlAttribute]
+        public string Name { get; set; }
+
+        #endregion
+
+        #region Methods
+
+        public XmlSchema GetSchema()
+        {
+            return null;
+        }
+
+        public abstract void ReadXml(XmlReader reader);
+
+        public abstract void WriteXml(XmlWriter writer);
+
+        #endregion
     }
 }

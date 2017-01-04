@@ -20,36 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using JetBrains.Annotations;
+using System.Xml;
 
-namespace Cadoscopia.SketchServices.Constraints
+namespace Cadoscopia.Parametric.SketchServices.Entities
 {
-    class Equals : Constraint
+    public interface IObjectWithReferences
     {
-        public Equals([NotNull] Parameter first, [NotNull] Parameter second)
-        {
-            if (first == null) throw new ArgumentNullException(nameof(first));
-            if (second == null) throw new ArgumentNullException(nameof(second));
+        #region Methods
 
-            parameters.Add(first);
-            parameters.Add(second);
-        }
+        void ReadXmlWithReferences(XmlReader reader);
 
-        public override double Error
-        {
-            get
-            {
-                double diff = Parameters[0].Value - Parameters[1].Value;
-                return diff * diff;
-            }
-        }
+        void WriteXmlWithReferences(XmlWriter writer);
 
-        public static bool IsApplicable(IEnumerable<Entity> entities)
-        {
-            return entities.OfType<Line>().Any();
-        }
+        #endregion
     }
 }

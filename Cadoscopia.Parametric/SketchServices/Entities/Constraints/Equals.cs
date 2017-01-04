@@ -25,27 +25,18 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 
-namespace Cadoscopia.SketchServices.Constraints
+namespace Cadoscopia.Parametric.SketchServices.Entities.Constraints
 {
-    public class Perpendicular : Constraint
+    public class Equals : Constraint
     {
-        #region Fields
-
-        [NotNull] readonly Line line1;
-
-        [NotNull] readonly Line line2;
-
-        #endregion
-
         #region Properties
 
         public override double Error
         {
             get
             {
-                double dotProduct =
-                    ((Geometry.Line) line1.Geometry).Direction.DotProduct(((Geometry.Line) line2.Geometry).Direction);
-                return dotProduct * dotProduct;
+                double diff = Parameters[0].Value - Parameters[1].Value;
+                return diff * diff;
             }
         }
 
@@ -53,23 +44,21 @@ namespace Cadoscopia.SketchServices.Constraints
 
         #region Constructors
 
-        public Perpendicular([NotNull] Line line1, [NotNull] Line line2)
+        /// <summary>
+        /// For XML deserialization.
+        /// </summary>
+        [UsedImplicitly]
+        Equals()
         {
-            if (line1 == null) throw new ArgumentNullException(nameof(line1));
-            if (line2 == null) throw new ArgumentNullException(nameof(line2));
+        }
 
-            this.line1 = line1;
-            this.line2 = line2;
+        public Equals([NotNull] Parameter first, [NotNull] Parameter second)
+        {
+            if (first == null) throw new ArgumentNullException(nameof(first));
+            if (second == null) throw new ArgumentNullException(nameof(second));
 
-            parameters.Add(line1.Start.X);
-            parameters.Add(line1.Start.Y);
-            parameters.Add(line1.End.X);
-            parameters.Add(line1.End.Y);
-
-            parameters.Add(line2.Start.X);
-            parameters.Add(line2.Start.Y);
-            parameters.Add(line2.End.X);
-            parameters.Add(line2.End.Y);
+            parameters.Add(first);
+            parameters.Add(second);
         }
 
         #endregion
@@ -78,8 +67,10 @@ namespace Cadoscopia.SketchServices.Constraints
 
         public static bool IsApplicable(IEnumerable<Entity> entities)
         {
-            return entities.OfType<Line>().Count() == 2;
+            return entities.OfType<Line>().Any();
         }
+
+        public override Geometry.Entity Geometry { get; }
 
         #endregion
     }

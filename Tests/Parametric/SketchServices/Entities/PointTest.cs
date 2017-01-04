@@ -20,41 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using JetBrains.Annotations;
+using Cadoscopia.IO;
+using Cadoscopia.Parametric.SketchServices.Entities;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Cadoscopia.SketchServices.Constraints
+namespace Tests.Parametric.SketchServices.Entities
 {
-    public class Line : Entity
+    [TestClass]
+    public class PointTest
     {
-        #region Properties
+        #region Methods
 
-        public Point End { get; set; }
-
-        public override Geometry.Entity Geometry => new Geometry.Line(new Geometry.Point(Start.X.Value, Start.Y.Value),
-            new Geometry.Point(End.X.Value, End.Y.Value));
-
-        public Point Start { get; set; }
-
-        #endregion
-
-        #region Constructors
-
-        public Line()
+        [TestMethod]
+        public void TestXmlSerialization()
         {
-            Start = new Point();
-            End = new Point();
-        }
-
-        public Line([NotNull] Parameter startX, [NotNull] Parameter startY)
-        {
-            if (startX == null) throw new ArgumentNullException(nameof(startX));
-            if (startY == null) throw new ArgumentNullException(nameof(startY));
-
-            Start = new Point(startX, startY);
-            End = new Point();
-            End.X.Value = startX.Value;
-            End.Y.Value = startY.Value;
+            var before = new Point(0.123, 4.567);
+            var gxs = new GenericXmlSerializer<Point>();
+            string xml = gxs.WriteToString(before);
+            Point after = gxs.ReadFromString(xml);
+            Assert.AreEqual(0.123, after.X.Value);
+            Assert.AreEqual(4.567, after.Y.Value);
         }
 
         #endregion

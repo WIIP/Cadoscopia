@@ -18,52 +18,27 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+// SOFTWARE.-
 
-using System;
+using Cadoscopia.IO;
+using Cadoscopia.Parametric.SketchServices;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Cadoscopia.Geometry
+namespace Tests.Parametric.SketchServices
 {
-    public class Point : Entity
+    [TestClass]
+    public class ParameterTest
     {
-        #region Properties
-
-        public double X { get; }
-
-        public double Y { get; }
-
-        #endregion
-
-        #region Constructors
-
-        public Point(double x, double y)
-        {
-            X = x;
-            Y = y;
-        }
-
-        #endregion
-
         #region Methods
 
-        public override double GetDistanceTo(Point point)
+        [TestMethod]
+        public void TestXmlSerialization()
         {
-            return Math.Sqrt(Math.Pow(point.X - X, 2) + Math.Pow(point.Y - Y, 2));
-        }
-
-        public Vector GetVector(Point point)
-        {
-            return new Vector(point.X - X, point.Y - Y);
-        }
-
-        public static Point operator +(Point p, Vector v)
-        {
-            return new Point(p.X + v.X, p.Y + v.Y);
-        }
-
-        public static Vector operator -(Point p, Point other)
-        {
-            return new Vector(p.X - other.X, p.Y - other.Y);
+            var before = new Parameter {Value = 52.7};
+            var gxs = new GenericXmlSerializer<Parameter>();
+            string xml = gxs.WriteToString(before);
+            Parameter after = gxs.ReadFromString(xml);
+            Assert.AreEqual(52.7, after.Value);
         }
 
         #endregion

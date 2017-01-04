@@ -73,30 +73,27 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CommandClassAttribute.cs" />
+    <Compile Include="CommandManager.cs" />
+    <Compile Include="Commands\OpenCommand.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="SketchServices\Constraints\Constraint.cs" />
-    <Compile Include="SketchServices\Constraints\Equals.cs" />
-    <Compile Include="SketchServices\Constraints\Parallel.cs" />
-    <Compile Include="SketchServices\Constraints\Perpendicular.cs" />
-    <Compile Include="Geometry\Entity.cs" />
+    <Compile Include="ConstraintParallelViewModel.cs" />
+    <Compile Include="Document.cs" />
+    <Compile Include="DocumentCollection.cs" />
+    <Compile Include="Properties\Resources.fr-FR.Designer.cs">
+      <DependentUpon>Resources.fr-FR.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="SharedObjectDocument.cs" />
     <Compile Include="EntityViewModel.cs" />
-    <Compile Include="Geometry\Line.cs" />
-    <Compile Include="Geometry\Point.cs" />
-    <Compile Include="Geometry\Vector.cs" />
     <Compile Include="IMainViewModelUserInput.cs" />
     <Compile Include="IO\GenericXmlSerializer.cs" />
     <Compile Include="LineViewModel.cs" />
     <Compile Include="MainViewModel.cs" />
     <Compile Include="MainViewModelUserInput.cs" />
     <Compile Include="Pluralize.cs" />
-    <Compile Include="SketchServices\Parameter.cs" />
     <Compile Include="PointViewModel.cs" />
-    <Compile Include="SketchServices\Constraints\Entity.cs" />
-    <Compile Include="SketchServices\Constraints\Line.cs" />
-    <Compile Include="SketchServices\Constraints\Point.cs" />
-    <Compile Include="SketchServices\Sketch.cs" />
-    <Compile Include="SketchServices\SketchObject.cs" />
-    <Compile Include="Solver.cs" />
     <Compile Include="Wpf\ViewModelCollection.cs" />
     <Compile Include="Wpf\RelayCommand.cs" />
     <Compile Include="Wpf\ViewModel.cs" />
@@ -128,8 +125,13 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.fr-FR.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.fr-FR.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="packages.config" />
@@ -146,7 +148,20 @@
     <Resource Include="Box.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="SketchServices\Entities\" />
+    <ProjectReference Include="..\Cadoscopia.Geometry\Cadoscopia.Geometry.csproj">
+      <Project>{D9BE0262-8230-4265-AFC3-24C8775F41ED}</Project>
+      <Name>Cadoscopia.Geometry</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cadoscopia.Parametric\Cadoscopia.Parametric.csproj">
+      <Project>{7c9d0a48-b863-4190-bc4e-1f06ff8937b9}</Project>
+      <Name>Cadoscopia.Parametric</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Vertical16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Parallel16.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Accord.3.3.0\build\Accord.targets" Condition="Exists('..\packages\Accord.3.3.0\build\Accord.targets')" />

@@ -26,42 +26,54 @@ using System.Linq;
 using Cadoscopia.Geometry;
 using JetBrains.Annotations;
 
-namespace Cadoscopia.SketchServices.Constraints
+namespace Cadoscopia.Parametric.SketchServices.Entities.Constraints
 {
     public class Parallel : Constraint
     {
-        #region Fields
-
-        [NotNull] readonly Line line1;
-
-        [NotNull] readonly Line line2;
-
-        #endregion
-
         #region Properties
 
         public override double Error
         {
             get
             {
-                Vector dir1 = ((Geometry.Line) line1.Geometry).Direction;
-                Vector dir2 = ((Geometry.Line) line2.Geometry).Direction;
-                double desc = dir1.Y * dir2.X - dir1.X * dir2.Y;
-                return desc * desc;
+                Vector dir1 = ((Geometry.Line) Line1.Geometry).Direction;
+                Vector dir2 = ((Geometry.Line) Line2.Geometry).Direction;
+                double crossProduct = dir1.X * dir2.Y - dir2.X * dir1.Y;
+                return crossProduct * crossProduct;
             }
         }
+
+        // TODO Should have an offset and should be a point cloud.
+        public override Geometry.Entity Geometry => ((Geometry.Line) Line1.Geometry).MidPoint;
+
+        [NotNull]
+        public Line Line1 { get; }
+
+        [NotNull]
+        public Line Line2 { get; }
 
         #endregion
 
         #region Constructors
 
+        /// <summary>
+        /// For XML serialization.
+        /// </summary>
+        [UsedImplicitly]
+        // ReSharper disable once NotNullMemberIsNotInitialized
+        Parallel()
+        {
+        }
+
         public Parallel([NotNull] Line line1, [NotNull] Line line2)
         {
             if (line1 == null) throw new ArgumentNullException(nameof(line1));
             if (line2 == null) throw new ArgumentNullException(nameof(line2));
+            if (line1.Sketch != line2.Sketch)
+                throw new ArgumentException("The two lines must belong to the same sketch.");
 
-            this.line1 = line1;
-            this.line2 = line2;
+            Line1 = line1;
+            Line2 = line2;
 
             parameters.Add(line1.Start.X);
             parameters.Add(line1.Start.Y);
@@ -72,6 +84,8 @@ namespace Cadoscopia.SketchServices.Constraints
             parameters.Add(line2.Start.Y);
             parameters.Add(line2.End.X);
             parameters.Add(line2.End.Y);
+
+            line1.Sketch?.Entities.Add(this);
         }
 
         #endregion

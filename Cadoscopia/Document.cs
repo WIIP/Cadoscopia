@@ -21,39 +21,55 @@
 // SOFTWARE.
 
 using System;
+using System.ComponentModel;
+using System.IO;
+using System.Runtime.CompilerServices;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 using JetBrains.Annotations;
 
-namespace Cadoscopia.SketchServices.Constraints
+namespace Cadoscopia
 {
-    public class Point : Entity
+    public abstract class Document: INotifyPropertyChanged, IXmlSerializable
     {
+        Uri uri;
+
         #region Properties
 
-        public override Geometry.Entity Geometry => new Geometry.Point(X.Value, Y.Value);
+        [CanBeNull]
+        public string Name => Uri != null ? Path.GetFileNameWithoutExtension(Uri.AbsolutePath) : null;
 
-        public Parameter X { get; }
-
-        public Parameter Y { get; }
-
-        #endregion
-
-        #region Constructors
-
-        public Point()
+        [CanBeNull]
+        public Uri Uri
         {
-            X = new Parameter();
-            Y = new Parameter();
-        }
-
-        public Point([NotNull] Parameter x, [NotNull] Parameter y)
-        {
-            if (x == null) throw new ArgumentNullException(nameof(x));
-            if (y == null) throw new ArgumentNullException(nameof(y));
-
-            X = x;
-            Y = y;
+            get { return uri; }
+            set
+            {
+                if (Equals(value, uri)) return;
+                uri = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(Name));
+            }
         }
 
         #endregion
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public XmlSchema GetSchema()
+        {
+            return null;
+        }
+
+        public abstract void ReadXml(XmlReader reader);
+
+        public abstract void WriteXml(XmlWriter writer);
     }
 }

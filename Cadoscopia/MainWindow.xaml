@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Cadoscopia"
+        xmlns:properties="clr-namespace:Cadoscopia.Properties"
         mc:Ignorable="d" d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
         Title="Cadoscopia" Height="480" Width="640" Icon="Box.ico">
     <Grid>
@@ -15,7 +16,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5">
-            <TextBlock>File</TextBlock>
+            <TextBlock Text="{x:Static properties:Resources.File}"/>
             <Button Command="{Binding SaveCommand}" Margin="5,0,0,0">Save</Button>
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5">
@@ -46,6 +47,9 @@
                     <DataTemplate DataType="{x:Type local:PointViewModel}">
                         <Ellipse Width="6" Height="6" Stroke="{Binding Color}" Fill="{Binding Color}"/>
                     </DataTemplate>
+                    <DataTemplate DataType="{x:Type local:ConstraintParallelViewModel}">
+                        <Image Source="Resources/Parallel16.png" Width="16" Height="16" />
+                    </DataTemplate>
                 </ItemsControl.Resources>
                 <ItemsControl.ItemContainerStyle>
                     <Style>
@@ -55,6 +59,7 @@
                 </ItemsControl.ItemContainerStyle>
             </ItemsControl>
         </Canvas>
-        <TextBlock Grid.Row="4" Text="{Binding Status}" Margin="5"/>
+        <TextBlock Grid.Row="4" Text="{Binding Status}" Background="{Binding StatusBackground, FallbackValue=#2B579A}" 
+                   Foreground="White" Padding="5,3"/>
     </Grid>
 </Window>

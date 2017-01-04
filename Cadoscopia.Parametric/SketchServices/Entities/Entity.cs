@@ -20,21 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Xml.Serialization;
 
-namespace Cadoscopia.SketchServices
+namespace Cadoscopia.Parametric.SketchServices.Entities
 {
-    // ReSharper disable once UseNameofExpression
-    [DebuggerDisplay("{Value}")]
-    public class Parameter
+    public abstract class Entity: SketchObject
     {
         #region Properties
 
-        [XmlAttribute]
-        [DefaultValue(0)]
-        public double Value { get; set; }
+        public abstract Geometry.Entity Geometry { get; }
 
         #endregion
     }
