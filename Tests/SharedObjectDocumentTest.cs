@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using Cadoscopia;
+using Cadoscopia.DatabaseServices;
 using Cadoscopia.IO;
 using Cadoscopia.Parametric.SketchServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -35,7 +36,7 @@ namespace Tests
         [TestMethod]
         public void XMLSerializationTest()
         {
-            var sut = new SharedObjectDocument();
+            var sut = new SharedObjectDocument(new SharedObjectDatabase());
             const string SKETCH_NAME = "Sketch1";
             var sketch = new Sketch
             {

@@ -59,11 +59,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="SketchServices\Entities\Constraints\Constraint.cs" />
     <Compile Include="SketchServices\Entities\Constraints\Equals.cs" />
+    <Compile Include="SketchServices\Entities\Constraints\Horizontal.cs" />
     <Compile Include="SketchServices\Entities\Constraints\Parallel.cs" />
     <Compile Include="SketchServices\Entities\Constraints\Perpendicular.cs" />
+    <Compile Include="SketchServices\Entities\Constraints\Vertical.cs" />
     <Compile Include="SketchServices\Entities\Entity.cs" />
+    <Compile Include="SketchServices\Entities\GeometricEntity.cs" />
     <Compile Include="SketchServices\Entities\IObjectWithReferences.cs" />
     <Compile Include="SketchServices\Entities\Line.cs" />
     <Compile Include="SketchServices\Entities\Point.cs" />
@@ -77,10 +85,25 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Cadoscopia.Core\Cadoscopia.Core.csproj">
+      <Project>{2BE7B1D8-15A8-41DB-8390-0595249213C6}</Project>
+      <Name>Cadoscopia.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cadoscopia.DatabaseServices\Cadoscopia.DatabaseServices.csproj">
+      <Project>{B11D06CF-4E3B-4F22-A69B-A82C135A8992}</Project>
+      <Name>Cadoscopia.DatabaseServices</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cadoscopia.Geometry\Cadoscopia.Geometry.csproj">
       <Project>{d9be0262-8230-4265-afc3-24c8775f41ed}</Project>
       <Name>Cadoscopia.Geometry</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.fr-FR.resx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Accord.3.3.0\build\Accord.targets" Condition="Exists('..\packages\Accord.3.3.0\build\Accord.targets')" />

@@ -20,19 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using Cadoscopia.DatabaseServices;
 
 namespace Cadoscopia.Parametric.SketchServices
 {
     // ReSharper disable once UseNameofExpression
     [DebuggerDisplay("{Value}")]
-    public class Parameter : INotifyPropertyChanging, IXmlSerializable
+    [Serializable]
+    public class Parameter : DatabaseObject, IXmlSerializable
     {
         #region Fields
 
@@ -51,16 +53,12 @@ namespace Cadoscopia.Parametric.SketchServices
             {
                 OnPropertyChanging();
                 this.value = value;
+                OnPropertyChanged();
             }
         }
 
         #endregion
 
-        #region Events
-
-        public event PropertyChangingEventHandler PropertyChanging;
-
-        #endregion
 
         #region Constructors
 
@@ -80,11 +78,6 @@ namespace Cadoscopia.Parametric.SketchServices
         public XmlSchema GetSchema()
         {
             return null;
-        }
-
-        protected void OnPropertyChanging([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
         }
 
         public void ReadXml(XmlReader reader)

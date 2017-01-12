@@ -66,6 +66,11 @@ namespace Cadoscopia.Geometry
             return new Point(p.X + v.X, p.Y + v.Y);
         }
 
+        public static Point operator -(Point p, Vector v)
+        {
+            return new Point(p.X - v.X, p.Y - v.Y);
+        }
+
         public static Point operator /(Point p, double value)
         {
             return new Point(p.X / value, p.Y  / value);

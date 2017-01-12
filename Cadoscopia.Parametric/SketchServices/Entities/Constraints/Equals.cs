@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cadoscopia.Geometry;
 using JetBrains.Annotations;
 
 namespace Cadoscopia.Parametric.SketchServices.Entities.Constraints
@@ -35,7 +36,7 @@ namespace Cadoscopia.Parametric.SketchServices.Entities.Constraints
         {
             get
             {
-                double diff = Parameters[0].Value - Parameters[1].Value;
+                double diff = Parameters.ElementAt(0).Value - Parameters.ElementAt(1).Value;
                 return diff * diff;
             }
         }
@@ -70,7 +71,12 @@ namespace Cadoscopia.Parametric.SketchServices.Entities.Constraints
             return entities.OfType<Line>().Any();
         }
 
-        public override Geometry.Entity Geometry { get; }
+        public override Geometry.Entity Geometry => new Geometry.Point(0, 0);
+
+        public override void Move(Vector vector)
+        {
+            throw new NotImplementedException();
+        }
 
         #endregion
     }

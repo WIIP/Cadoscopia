@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -30,6 +31,7 @@ using JetBrains.Annotations;
 
 namespace Cadoscopia.Parametric.SketchServices
 {
+    [Serializable]
     public class Sketch : Feature
     {
         #region Properties
@@ -52,20 +54,22 @@ namespace Cadoscopia.Parametric.SketchServices
 
         public Point AddPoint()
         {
-            var point = new Point {Sketch = this};
+            var point = new Point {Parent = this};
             Entities.Add(point);
             return point;
         }
 
         public Point AddPoint(double x, double y)
         {
-            var point = new Point(x, y) {Sketch = this};
+            var point = new Point(x, y) {Parent = this};
             Entities.Add(point);
             return point;
         }
 
-        public int CountReferences(Point point)
+        public int CountReferences([NotNull] Point point)
         {
+            if (point == null) throw new ArgumentNullException(nameof(point));
+
             int count = 1;
             foreach (Entity entity in Entities)
             {
@@ -78,24 +82,19 @@ namespace Cadoscopia.Parametric.SketchServices
         }
 
         /// <summary>
-        /// Returns the entity which is near the passed point or null if there are no element.
+        /// Returns the entities which is near the passed point.
         /// </summary>
         /// <param name="point"></param>
         /// <param name="radius"></param>
         /// <returns></returns>
-        [CanBeNull]
-        T EntityAtPoint<T>(Point point, double radius) where T : Entity
+        public IEnumerable<T> EntitiesAtPoint<T>(Geometry.Point point, double radius) where T : Entity
         {
-            for (int i = Entities.Count - 1; i >= 0; i--)
+            foreach (T entity in Entities.OfType<T>())
             {
-                Entity entity = Entities[i];
-                if (!(entity is T)) continue;
-
-                double d = entity.Geometry.GetDistanceTo((Geometry.Point) point.Geometry);
-                if (d > 10) continue;
-                return (T) entity;
+                double d = entity.Geometry.GetDistanceTo(point);
+                if (d > radius) continue;
+                yield return (T) entity;
             }
-            return null;
         }
 
         public override void ReadXml(XmlReader reader)
@@ -128,19 +127,19 @@ namespace Cadoscopia.Parametric.SketchServices
                 switch (reader.Name)
                 {
                     case nameof(Point):
-                        var point = new Point {Sketch = this};
+                        var point = new Point {Parent = this};
                         Entities.Add(point);
                         point.ReadXmlWithReferences(reader);
                         break;
 
                     case nameof(Line):
-                        var line = new Line {Sketch = this};
+                        var line = new Line {Parent = this};
                         Entities.Add(line);
                         line.ReadXmlWithReferences(reader);
                         break;
 
                     case nameof(Perpendicular):
-                        var perpendicular = new Perpendicular {Sketch = this};
+                        var perpendicular = new Perpendicular {Parent = this};
                         Entities.Add(perpendicular);
                         perpendicular.ReadXmlWithReferences(reader);
                         break;

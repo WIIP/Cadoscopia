@@ -26,6 +26,8 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using Cadoscopia.Core;
+using Cadoscopia.DatabaseServices;
 using JetBrains.Annotations;
 
 namespace Cadoscopia.Wpf
@@ -53,6 +55,17 @@ namespace Cadoscopia.Wpf
         #region Constructors
 
         public ViewModelCollection([NotNull] ObservableCollection<TModel> source,
+            [NotNull] Func<TModel, TViewModel> viewModelFactory)
+            : base(source.Select(viewModelFactory))
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (viewModelFactory == null) throw new ArgumentNullException(nameof(viewModelFactory));
+
+            source.CollectionChanged += OnSourceCollectionChanged;
+            this.viewModelFactory = viewModelFactory;
+        }
+
+        public ViewModelCollection([NotNull] ObservableStack<TModel> source,
             [NotNull] Func<TModel, TViewModel> viewModelFactory)
             : base(source.Select(viewModelFactory))
         {

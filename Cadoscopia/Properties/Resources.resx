@@ -133,18 +133,60 @@
     <value>No solution found.</value>
   </data>
   <data name="NextPoint" xml:space="preserve">
-    <value>Next point:</value>
+    <value>Next point</value>
   </data>
   <data name="LineSecondPoint" xml:space="preserve">
-    <value>Select line second point:</value>
+    <value>Select line ending point</value>
   </data>
   <data name="LineFirstPoint" xml:space="preserve">
-    <value>Select line first point:</value>
+    <value>Select line starting point</value>
   </data>
   <data name="File" xml:space="preserve">
     <value>File</value>
   </data>
-  <data name="String1" xml:space="preserve">
-    <value />
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Constraints" xml:space="preserve">
+    <value>Constraints</value>
+  </data>
+  <data name="Draw" xml:space="preserve">
+    <value>Draw</value>
+  </data>
+  <data name="Horizontal" xml:space="preserve">
+    <value>Horizontal</value>
+  </data>
+  <data name="Line" xml:space="preserve">
+    <value>Line</value>
+  </data>
+  <data name="Parallel" xml:space="preserve">
+    <value>Parallel</value>
+  </data>
+  <data name="Perpendicular" xml:space="preserve">
+    <value>Perpendicular</value>
+  </data>
+  <data name="Vertical" xml:space="preserve">
+    <value>Vertical</value>
+  </data>
+  <data name="Redo" xml:space="preserve">
+    <value>Redo</value>
+  </data>
+  <data name="Undo" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="Circle" xml:space="preserve">
+    <value>Circle</value>
+  </data>
+  <data name="Point" xml:space="preserve">
+    <value>Point</value>
+  </data>
+  <data name="PointPosition" xml:space="preserve">
+    <value>Point position</value>
+  </data>
+  <data name="Drag" xml:space="preserve">
+    <value>Drag</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
   </data>
 </root>

@@ -20,19 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using Cadoscopia.DatabaseServices;
 using JetBrains.Annotations;
 
 namespace Cadoscopia.Parametric.SketchServices
 {
-    public abstract class SketchObject : INotifyPropertyChanging
+    [Serializable]
+    public abstract class SketchObject : DatabaseObject
     {
         #region Fields
 
         protected readonly List<Parameter> parameters = new List<Parameter>();
+
+        [NonSerialized] Sketch parent;
 
         #endregion
 
@@ -41,21 +44,11 @@ namespace Cadoscopia.Parametric.SketchServices
         public IEnumerable<Parameter> Parameters => new ReadOnlyCollection<Parameter>(parameters);
 
         [CanBeNull]
-        public Sketch Sketch { get; internal set; }
-
-        #endregion
-
-        #region Events
-
-        public event PropertyChangingEventHandler PropertyChanging;
-
-        #endregion
-
-        #region Methods
-
-        protected void OnPropertyChanging([CallerMemberName] string propertyName = null)
+        [IgnoreForUndoRedoMonitoring]
+        public Sketch Parent
         {
-            PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
+            get { return parent; }
+            internal set { parent = value; }
         }
 
         #endregion

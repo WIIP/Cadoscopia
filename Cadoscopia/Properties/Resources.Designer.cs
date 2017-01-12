@@ -61,11 +61,56 @@ namespace Cadoscopia.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Circle.
+        /// </summary>
+        public static string Circle {
+            get {
+                return ResourceManager.GetString("Circle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Constraints.
+        /// </summary>
+        public static string Constraints {
+            get {
+                return ResourceManager.GetString("Constraints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Drag.
+        /// </summary>
+        public static string Drag {
+            get {
+                return ResourceManager.GetString("Drag", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Draw.
+        /// </summary>
+        public static string Draw {
+            get {
+                return ResourceManager.GetString("Draw", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à {0} entities selected.
         /// </summary>
         public static string EntitiesSelected {
             get {
                 return ResourceManager.GetString("EntitiesSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Error.
+        /// </summary>
+        public static string Error {
+            get {
+                return ResourceManager.GetString("Error", resourceCulture);
             }
         }
         
@@ -79,7 +124,34 @@ namespace Cadoscopia.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Select line first point:.
+        ///   Recherche une chaîne localisée semblable à Home.
+        /// </summary>
+        public static string Home {
+            get {
+                return ResourceManager.GetString("Home", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Horizontal.
+        /// </summary>
+        public static string Horizontal {
+            get {
+                return ResourceManager.GetString("Horizontal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Line.
+        /// </summary>
+        public static string Line {
+            get {
+                return ResourceManager.GetString("Line", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Select line starting point.
         /// </summary>
         public static string LineFirstPoint {
             get {
@@ -88,7 +160,7 @@ namespace Cadoscopia.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Select line second point:.
+        ///   Recherche une chaîne localisée semblable à Select line ending point.
         /// </summary>
         public static string LineSecondPoint {
             get {
@@ -97,7 +169,7 @@ namespace Cadoscopia.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Next point:.
+        ///   Recherche une chaîne localisée semblable à Next point.
         /// </summary>
         public static string NextPoint {
             get {
@@ -124,11 +196,56 @@ namespace Cadoscopia.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Parallel.
+        /// </summary>
+        public static string Parallel {
+            get {
+                return ResourceManager.GetString("Parallel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Perpendicular.
+        /// </summary>
+        public static string Perpendicular {
+            get {
+                return ResourceManager.GetString("Perpendicular", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Point.
+        /// </summary>
+        public static string Point {
+            get {
+                return ResourceManager.GetString("Point", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Point position.
+        /// </summary>
+        public static string PointPosition {
+            get {
+                return ResourceManager.GetString("PointPosition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Ready.
         /// </summary>
         public static string Ready {
             get {
                 return ResourceManager.GetString("Ready", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Redo.
+        /// </summary>
+        public static string Redo {
+            get {
+                return ResourceManager.GetString("Redo", resourceCulture);
             }
         }
         
@@ -142,11 +259,20 @@ namespace Cadoscopia.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à .
+        ///   Recherche une chaîne localisée semblable à Undo.
         /// </summary>
-        public static string String1 {
+        public static string Undo {
             get {
-                return ResourceManager.GetString("String1", resourceCulture);
+                return ResourceManager.GetString("Undo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Vertical.
+        /// </summary>
+        public static string Vertical {
+            get {
+                return ResourceManager.GetString("Vertical", resourceCulture);
             }
         }
     }

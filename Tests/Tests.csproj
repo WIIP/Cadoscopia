@@ -35,8 +35,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -51,7 +55,10 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Constraints\PerpendicularTest.cs" />
+    <Compile Include="Commands\LineCommandTest.cs" />
+    <Compile Include="DatabaseServices\ListChangedRecordTest.cs" />
+    <Compile Include="DatabaseServices\PropertiesChangedRecordTest.cs" />
+    <Compile Include="Parametric\SketchServices\Entities\Constraints\PerpendicularTest.cs" />
     <Compile Include="MainViewModelTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SharedObjectDocumentTest.cs" />
@@ -60,6 +67,10 @@
     <Compile Include="Parametric\SketchServices\SketchTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Cadoscopia.DatabaseServices\Cadoscopia.DatabaseServices.csproj">
+      <Project>{B11D06CF-4E3B-4F22-A69B-A82C135A8992}</Project>
+      <Name>Cadoscopia.DatabaseServices</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cadoscopia.Geometry\Cadoscopia.Geometry.csproj">
       <Project>{d9be0262-8230-4265-afc3-24c8775f41ed}</Project>
       <Name>Cadoscopia.Geometry</Name>

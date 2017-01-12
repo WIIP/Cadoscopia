@@ -23,12 +23,15 @@
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using Cadoscopia.DatabaseServices;
 
 namespace Cadoscopia.Parametric.SketchServices
 {
-    public abstract class Feature : IXmlSerializable
+    public abstract class Feature : DatabaseObject, IXmlSerializable
     {
         #region Properties
+
+        public Database Database { get; set; }
 
         [XmlAttribute]
         public string Name { get; set; }

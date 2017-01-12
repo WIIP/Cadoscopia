@@ -29,11 +29,13 @@ namespace Cadoscopia
     /// <summary>
     /// Logique d'interaction pour MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         #region Fields
 
         readonly MainViewModel mainViewModel;
+
+        Point from;
 
         #endregion
 
@@ -43,7 +45,7 @@ namespace Cadoscopia
         {
             InitializeComponent();
 
-            mainViewModel = new MainViewModel(new MainViewModelUserInput());
+            mainViewModel = new MainViewModel(App.Current);
             DataContext = mainViewModel;
         }
 
@@ -62,16 +64,17 @@ namespace Cadoscopia
             var canvas = (Canvas) sender;
             // Put the focus on the canvas in order to catch key press.
             canvas.Focus();
-            Point position = e.GetPosition(canvas);
-            mainViewModel.OnCanvasClick(position,
+            from = e.GetPosition(canvas);
+            mainViewModel.OnCanvasClick(from,
                 Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift));
         }
 
         void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
             var canvas = (Canvas) sender;
-            Point position = e.GetPosition(canvas);
-            mainViewModel.OnCanvasMove(position);
+            Point to = e.GetPosition(canvas);
+            mainViewModel.OnCanvasMove(from, to, e.LeftButton == MouseButtonState.Pressed);
+            from = to;
         }
 
         #endregion

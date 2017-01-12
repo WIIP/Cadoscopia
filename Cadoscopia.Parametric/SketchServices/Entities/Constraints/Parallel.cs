@@ -47,10 +47,10 @@ namespace Cadoscopia.Parametric.SketchServices.Entities.Constraints
         public override Geometry.Entity Geometry => ((Geometry.Line) Line1.Geometry).MidPoint;
 
         [NotNull]
-        public Line Line1 { get; }
+        public Line Line1 => (Line)GeometricEntities.ElementAt(0);
 
         [NotNull]
-        public Line Line2 { get; }
+        public Line Line2 => (Line)GeometricEntities.ElementAt(1);
 
         #endregion
 
@@ -69,11 +69,11 @@ namespace Cadoscopia.Parametric.SketchServices.Entities.Constraints
         {
             if (line1 == null) throw new ArgumentNullException(nameof(line1));
             if (line2 == null) throw new ArgumentNullException(nameof(line2));
-            if (line1.Sketch != line2.Sketch)
+            if (line1.Parent != line2.Parent)
                 throw new ArgumentException("The two lines must belong to the same sketch.");
 
-            Line1 = line1;
-            Line2 = line2;
+            geometricEntities.Add(line1);
+            geometricEntities.Add(line2);
 
             parameters.Add(line1.Start.X);
             parameters.Add(line1.Start.Y);
@@ -85,7 +85,8 @@ namespace Cadoscopia.Parametric.SketchServices.Entities.Constraints
             parameters.Add(line2.End.X);
             parameters.Add(line2.End.Y);
 
-            line1.Sketch?.Entities.Add(this);
+            line1.Parent?.Entities.Add(this);
+            Parent = line1.Parent;
         }
 
         #endregion
@@ -95,6 +96,10 @@ namespace Cadoscopia.Parametric.SketchServices.Entities.Constraints
         public static bool IsApplicable(IEnumerable<Entity> entities)
         {
             return entities.OfType<Line>().Count() == 2;
+        }
+
+        public override void Move(Vector vector)
+        {
         }
 
         #endregion

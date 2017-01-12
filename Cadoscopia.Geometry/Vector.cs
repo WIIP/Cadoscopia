@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
+using static System.Math;
 
 namespace Cadoscopia.Geometry
 {
@@ -30,7 +30,7 @@ namespace Cadoscopia.Geometry
 
         public double Y { get; }
 
-        public double Length => Math.Sqrt(DotProduct(this));
+        public double Length => Sqrt(DotProduct(this));
 
         public Vector(double x, double y)
         {
@@ -61,6 +61,11 @@ namespace Cadoscopia.Geometry
         public static Vector operator *(Vector v, double n)
         {
             return new Vector(v.X * n, v.Y * n);
+        }
+
+        public Vector GetPerpendicular()
+        {
+            return new Vector(-Y, X);
         }
     }
 }

@@ -76,11 +76,5 @@ namespace Cadoscopia
 
             SketchEntity = sketchEntity;
         }
-
-        #region Methods
-
-        public abstract void UpdateBindings();
-
-        #endregion
     }
 }

@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using Cadoscopia.DatabaseServices;
+using Cadoscopia.Parametric.SketchServices;
+
 // MIT License
 
 // Copyright(c) 2016 Cadoscopia http://cadoscopia.com
@@ -23,21 +26,17 @@ using System.Collections.Specialized;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Linq;
-using JetBrains.Annotations;
-
 namespace Cadoscopia
 {
     public class DocumentCollection : INotifyCollectionChanged, IEnumerable<Document>
     {
         #region Fields
 
+        readonly App application;
+
         readonly List<Document> documents = new List<Document>();
 
         #endregion
-
-        [CanBeNull]
-        public Document ActiveDocument => documents.LastOrDefault();
 
         #region Events
 
@@ -45,7 +44,26 @@ namespace Cadoscopia
 
         #endregion
 
+        #region Constructors
+
+        public DocumentCollection(App application)
+        {
+            this.application = application;
+        }
+
+        #endregion
+
         #region Methods
+
+        public void Add()
+        {
+            var db = new SharedObjectDatabase(undoRecording: false);
+            db.Objects.Add(new Sketch { Database = db });
+            db.StartUndoRecording();
+            var sharedObjectDocument = new SharedObjectDocument(db);
+            documents.Add(sharedObjectDocument);
+            application.ActiveDocument = sharedObjectDocument;
+        }
 
         IEnumerator IEnumerable.GetEnumerator()
         {

@@ -17,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cadoscopia.Parametric", "Ca
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cadoscopia.Geometry", "Cadoscopia.Geometry\Cadoscopia.Geometry.csproj", "{D9BE0262-8230-4265-AFC3-24C8775F41ED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cadoscopia.DatabaseServices", "Cadoscopia.DatabaseServices\Cadoscopia.DatabaseServices.csproj", "{B11D06CF-4E3B-4F22-A69B-A82C135A8992}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cadoscopia.Core", "Cadoscopia.Core\Cadoscopia.Core.csproj", "{2BE7B1D8-15A8-41DB-8390-0595249213C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{D9BE0262-8230-4265-AFC3-24C8775F41ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9BE0262-8230-4265-AFC3-24C8775F41ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9BE0262-8230-4265-AFC3-24C8775F41ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B11D06CF-4E3B-4F22-A69B-A82C135A8992}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B11D06CF-4E3B-4F22-A69B-A82C135A8992}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B11D06CF-4E3B-4F22-A69B-A82C135A8992}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B11D06CF-4E3B-4F22-A69B-A82C135A8992}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BE7B1D8-15A8-41DB-8390-0595249213C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BE7B1D8-15A8-41DB-8390-0595249213C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BE7B1D8-15A8-41DB-8390-0595249213C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BE7B1D8-15A8-41DB-8390-0595249213C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

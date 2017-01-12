@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Xml;
+using Cadoscopia.Geometry;
 using JetBrains.Annotations;
 
 namespace Cadoscopia.Parametric.SketchServices.Entities.Constraints
@@ -34,10 +35,10 @@ namespace Cadoscopia.Parametric.SketchServices.Entities.Constraints
         #region Fields
 
         [NotNull]
-        public Line Line1 { get; private set; }
+        public Line Line1 => (Line)GeometricEntities.ElementAt(0);
 
         [NotNull]
-        public Line Line2 { get; private set; }
+        public Line Line2 => (Line)GeometricEntities.ElementAt(1);
 
         #endregion
 
@@ -70,14 +71,14 @@ namespace Cadoscopia.Parametric.SketchServices.Entities.Constraints
         {
             if (line1 == null) throw new ArgumentNullException(nameof(line1));
             if (line2 == null) throw new ArgumentNullException(nameof(line2));
-            if (line1.Sketch != line2.Sketch)
+            if (line1.Parent != line2.Parent)
                 throw new ArgumentException("The two lines must belong to the same sketch.");
 
-            Line1 = line1;
-            Line2 = line2;
+            geometricEntities.Add(line1);
+            geometricEntities.Add(line2);
 
-            line1.Sketch?.Entities.Add(this);
-            Sketch = line1.Sketch;
+            line1.Parent?.Entities.Add(this);
+            Parent = line1.Parent;
 
             parameters.Add(line1.Start.X);
             parameters.Add(line1.Start.Y);
@@ -103,28 +104,29 @@ namespace Cadoscopia.Parametric.SketchServices.Entities.Constraints
 
         public void WriteXmlWithReferences(XmlWriter writer)
         {
-            if (Sketch == null)
+            if (Parent == null)
                 throw new InvalidOperationException("This method cannot be called if the perpendicular constraint is not associated to a sketch.");
 
             writer.WriteStartElement(nameof(Line1));
-            writer.WriteAttributeString("Ref", Sketch.Entities.IndexOf(Line1).ToString());
+            writer.WriteAttributeString("Ref", Parent.Entities.IndexOf(Line1).ToString());
             writer.WriteEndElement();
 
             writer.WriteStartElement(nameof(Line2));
-            writer.WriteAttributeString("Ref", Sketch.Entities.IndexOf(Line2).ToString());
+            writer.WriteAttributeString("Ref", Parent.Entities.IndexOf(Line2).ToString());
             writer.WriteEndElement();
         }
 
         public void ReadXmlWithReferences(XmlReader reader)
         {
-            if (Sketch == null)
+            if (Parent == null)
                 throw new InvalidOperationException(
                     "This method cannot be called if the perpendicular constraint  is not associated to a sketch.");
 
             reader.MoveToContent();
             reader.ReadStartElement(nameof(Perpendicular));
-            Line1 = ReadLine(reader, nameof(Line1));
-            Line2 = ReadLine(reader, nameof(Line2));
+            geometricEntities.Clear();
+            geometricEntities.Add(ReadLine(reader, nameof(Line1)));
+            geometricEntities.Add(ReadLine(reader, nameof(Line2)));
             reader.ReadEndElement();
         }
 
@@ -134,8 +136,12 @@ namespace Cadoscopia.Parametric.SketchServices.Entities.Constraints
             reader.ReadStartElement(lineName);
             if (refAsString == null) return null;
             int reference = int.Parse(refAsString);
-            Debug.Assert(Sketch != null, "Sketch != null");
-            return (Line)Sketch.Entities.ElementAt(reference);
+            Debug.Assert(Parent != null, "Sketch != null");
+            return (Line)Parent.Entities.ElementAt(reference);
+        }
+
+        public override void Move(Vector vector)
+        {
         }
 
         #endregion

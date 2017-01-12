@@ -26,18 +26,38 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using Cadoscopia.Geometry;
 
 namespace Cadoscopia.Parametric.SketchServices.Entities
 {
-    public class Point : Entity, IXmlSerializable, IObjectWithReferences
+    [Serializable]
+    public class Point : GeometricEntity, IXmlSerializable, IObjectWithReferences
     {
         #region Properties
         
         public override Geometry.Entity Geometry => new Geometry.Point(X.Value, Y.Value);
 
-        public Parameter X => parameters[0];
+        public Parameter X
+        {
+            get { return parameters[0]; }
+            set
+            {
+                OnPropertyChanging();
+                parameters[0] = value;
+                OnPropertyChanged();
+            }
+        }
 
-        public Parameter Y => parameters[1];
+        public Parameter Y
+        {
+            get { return parameters[1]; }
+            set
+            {
+                OnPropertyChanging();
+                parameters[1] = value;
+                OnPropertyChanged();
+            }
+        }
 
         #endregion
 
@@ -86,21 +106,21 @@ namespace Cadoscopia.Parametric.SketchServices.Entities
 
         public void WriteXmlWithReferences(XmlWriter writer)
         {
-            if (Sketch == null)
+            if (Parent == null)
                 throw new InvalidOperationException("This method cannot be called if the point is not associated to a sketch.");
 
             writer.WriteStartElement(nameof(X));
-            writer.WriteAttributeString("Ref", Sketch.Parameters.ToList().IndexOf(X).ToString());
+            writer.WriteAttributeString("Ref", Parent.Parameters.ToList().IndexOf(X).ToString());
             writer.WriteEndElement();
 
             writer.WriteStartElement(nameof(Y));
-            writer.WriteAttributeString("Ref", Sketch.Parameters.ToList().IndexOf(Y).ToString());
+            writer.WriteAttributeString("Ref", Parent.Parameters.ToList().IndexOf(Y).ToString());
             writer.WriteEndElement();
         }
 
         public void ReadXmlWithReferences(XmlReader reader)
         {
-            if (Sketch == null)
+            if (Parent == null)
                 throw new InvalidOperationException("This method cannot be called if the point is not associated to a sketch.");
 
             reader.MoveToContent();
@@ -116,8 +136,14 @@ namespace Cadoscopia.Parametric.SketchServices.Entities
             reader.ReadStartElement(parameterName);
             if (refAsString == null) return;
             int reference = int.Parse(refAsString);
-            Debug.Assert(Sketch != null, "Sketch != null");
-            parameters[parameterIndex] = Sketch.ParameterReferences.ElementAt(reference);
+            Debug.Assert(Parent != null, "Sketch != null");
+            parameters[parameterIndex] = Parent.ParameterReferences.ElementAt(reference);
+        }
+
+        public override void Move(Vector vector)
+        {
+            X.Value += vector.X;
+            Y.Value += vector.Y;
         }
 
         #endregion

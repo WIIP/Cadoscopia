@@ -20,26 +20,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using Cadoscopia.Geometry;
+using JetBrains.Annotations;
 
 namespace Cadoscopia.Parametric.SketchServices.Entities.Constraints
 {
-    public abstract class Constraint: Entity
+    public abstract class Constraint : Entity
     {
         #region Fields
 
-        protected readonly List<Parameter> parameters = new List<Parameter>();
+        protected readonly List<GeometricEntity> geometricEntities = new List<GeometricEntity>();
 
         #endregion
 
         #region Properties
 
-        public abstract double Error { get; }
+        public virtual double Error => 0;
 
-        internal ReadOnlyCollection<Parameter> Parameters => new ReadOnlyCollection<Parameter>(parameters);
+        public IReadOnlyCollection<GeometricEntity> GeometricEntities
+            => new ReadOnlyCollection<GeometricEntity>(geometricEntities);
 
         public virtual bool UseSharedParameters => false;
+
+        #endregion
+
+        #region Methods
+
+        protected Geometry.Point GetSymbolPosition([NotNull] GeometricEntity entity)
+        {
+            var line = (Geometry.Line) entity.Geometry;
+            Vector perp = line.Direction.GetPerpendicular().Normalize();
+            Geometry.Point tPoint = line.MidPoint + perp * 10;
+            return tPoint;
+            List<Constraint> constraints = entity.Constraints.ToList();
+            int indexOf = constraints.IndexOf(this);
+            // ReSharper disable once PossibleLossOfFraction
+            Geometry.Point basePoint = tPoint - line.Direction * (16 * constraints.Count / 2);
+            return basePoint + line.Direction * (16 * indexOf);
+        }
 
         #endregion
     }

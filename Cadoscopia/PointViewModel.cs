@@ -20,12 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.ComponentModel;
 using Cadoscopia.Parametric.SketchServices.Entities;
 using JetBrains.Annotations;
 
 namespace Cadoscopia
 {
-    class PointViewModel : EntityViewModel
+    sealed class PointViewModel : EntityViewModel
     {
         #region Fields
 
@@ -61,44 +62,45 @@ namespace Cadoscopia
             }
         }
 
-        public double X
-        {
-            get { return Point.X.Value; }
-            set
-            {
-                Point.X.Value = value;
-                OnPropertyChanged(nameof(X));
-                Left = X - Constants.POINT_RADIUS;
-            }
-        }
-
-        public double Y
-        {
-            get { return Point.Y.Value; }
-            set
-            {
-                Point.Y.Value = value;
-                OnPropertyChanged(nameof(Y));
-                Top = Y - Constants.POINT_RADIUS;
-            }
-        }
-
         #endregion
 
         #region Constructors
 
         public PointViewModel(Point point) : base(point)
         {
+            Left = point.X.Value - Constants.POINT_RADIUS;
+            Top = point.Y.Value - Constants.POINT_RADIUS;
+
+            Point.PropertyChanging += Point_PropertyChanging;
+            Point.PropertyChanged += Point_PropertyChanged;
+
+            Point.X.PropertyChanged += X_PropertyChanged;
+            Point.Y.PropertyChanged += Y_PropertyChanged;
         }
 
-        #endregion
-
-        #region Methods
-
-        public override void UpdateBindings()
+        void Point_PropertyChanging(object sender, PropertyChangingEventArgs e)
         {
-            X = Point.X.Value;
-            Y = Point.Y.Value;
+            Point.X.PropertyChanged -= X_PropertyChanged;
+            Point.Y.PropertyChanged -= Y_PropertyChanged;
+        }
+
+        void Point_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            Left = Point.X.Value - Constants.POINT_RADIUS;
+            Top = Point.Y.Value - Constants.POINT_RADIUS;
+
+            Point.X.PropertyChanged += X_PropertyChanged;
+            Point.Y.PropertyChanged += Y_PropertyChanged;
+        }
+
+        void Y_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            Top = Point.Y.Value - Constants.POINT_RADIUS;
+        }
+
+        void X_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            Left = Point.X.Value - Constants.POINT_RADIUS;
         }
 
         #endregion

@@ -20,12 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Linq;
 using Cadoscopia.Parametric.SketchServices;
 using Cadoscopia.Parametric.SketchServices.Entities;
 using Cadoscopia.Parametric.SketchServices.Entities.Constraints;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Tests.Constraints
+namespace Tests.Parametric.SketchServices.Entities.Constraints
 {
     [TestClass]
     public class PerpendicularTest
@@ -35,10 +36,10 @@ namespace Tests.Constraints
         {
             var sketch = new Sketch();
 
-            var p0 = sketch.AddPoint();
-            var p1 = sketch.AddPoint(1, 0);
-            var p2 = sketch.AddPoint(0, 1);
-            var p3 = sketch.AddPoint(1, 1);
+            Point p0 = sketch.AddPoint();
+            Point p1 = sketch.AddPoint(1, 0);
+            Point p2 = sketch.AddPoint(0, 1);
+            Point p3 = sketch.AddPoint(1, 1);
 
             var horizontalLine = new Line(p0, p1);
 
@@ -48,12 +49,12 @@ namespace Tests.Constraints
 
             {
                 var sut = new Perpendicular(horizontalLine, verticalLine);
-                Assert.AreEqual(sut.Error, 0, "The error should be zero because the 2 lines are perpendicular.");
+                Assert.AreEqual(0, sut.Error, "The error should be zero because the 2 lines are perpendicular.");
             }
 
             {
                 var sut = new Perpendicular(horizontalLine, diagonalLine);
-                Assert.AreNotEqual(sut.Error, 0,
+                Assert.AreNotEqual(0, sut.Error, 
                     "The error should not be zero because the 2 lines are not perpendicular.");
             }
         }

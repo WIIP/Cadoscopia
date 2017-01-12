@@ -1,5 +1,6 @@
-﻿<Window x:Class="Cadoscopia.MainWindow"
+﻿<fluent:RibbonWindow x:Class="Cadoscopia.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:fluent="clr-namespace:Fluent;assembly=Fluent"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -10,27 +11,74 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition />
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5">
-            <TextBlock Text="{x:Static properties:Resources.File}"/>
-            <Button Command="{Binding SaveCommand}" Margin="5,0,0,0">Save</Button>
-        </StackPanel>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5">
-            <TextBlock>Draw</TextBlock>
-            <Button Command="{Binding LineCommand}" Margin="5,0,0,0">Line</Button>
-        </StackPanel>
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5">
-            <TextBlock>Constraints</TextBlock>
-            <Button Command="{Binding VerticalCommand}" Margin="5,0,0,0">Vertical</Button>
-            <Button Command="{Binding HorizontalCommand}" Margin="5,0,0,0">Horizontal</Button>
-            <Button Command="{Binding PerpendicularCommand}" Margin="5,0,0,0">Perpendicular</Button>
-            <Button Command="{Binding ParallelCommand}" Margin="5,0,0,0">Parallel</Button>
-        </StackPanel>
-        <Canvas Background="White" Grid.Row="3" MouseDown="Canvas_MouseDown" Cursor="{Binding CanvasCursor}"
+        <fluent:Ribbon Grid.Row="0">
+            <!-- Backstage -->
+            <fluent:Ribbon.Menu>
+                <fluent:Backstage>
+                    <fluent:BackstageTabControl/>
+                </fluent:Backstage>
+            </fluent:Ribbon.Menu>
+
+            <!--Quick Access Toolbar Items-->
+            <fluent:Ribbon.QuickAccessItems>
+                <fluent:QuickAccessMenuItem IsChecked="True">
+                    <fluent:DropDownButton Header="{x:Static properties:Resources.Undo}" 
+                                           Icon="pack://application:,,,/Cadoscopia;component/Resources/Undo16.png" 
+                                           SizeDefinition="Small" ToolTip="{x:Static properties:Resources.Undo}" 
+                                           ItemsSource="{Binding UndoItems}" IsEnabled="{Binding UndoIsEnabled}">
+                        <fluent:DropDownButton.ItemContainerStyle>
+                            <Style TargetType="fluent:MenuItem">
+                                <Setter Property="Command" Value="{Binding UndoCommand}"/>
+                            </Style>
+                        </fluent:DropDownButton.ItemContainerStyle>
+                    </fluent:DropDownButton>
+                </fluent:QuickAccessMenuItem>
+                <fluent:QuickAccessMenuItem IsChecked="True">
+                    <fluent:DropDownButton Header="{x:Static properties:Resources.Redo}" 
+                                           Icon="pack://application:,,,/Cadoscopia;component/Resources/Redo16.png"
+                                           SizeDefinition="Small" ToolTip="{x:Static properties:Resources.Redo}"
+                                           ItemsSource="{Binding RedoItems}" IsEnabled="{Binding RedoIsEnabled}">
+                        <fluent:DropDownButton.ItemContainerStyle>
+                            <Style TargetType="fluent:MenuItem">
+                                <Setter Property="Command" Value="{Binding RedoCommand}"/>
+                            </Style>
+                        </fluent:DropDownButton.ItemContainerStyle>
+                    </fluent:DropDownButton>
+                </fluent:QuickAccessMenuItem>
+            </fluent:Ribbon.QuickAccessItems>
+
+            <!-- Tab items -->
+            <fluent:RibbonTabItem Header="{x:Static properties:Resources.Home}">
+                <fluent:RibbonGroupBox Header="{x:Static properties:Resources.Draw}">
+                    <fluent:Button Header="{x:Static properties:Resources.Line}" 
+                                   LargeIcon="pack://application:,,,/Cadoscopia;component/Resources/Line32.png"
+                                   Command="{Binding ExecuteCommandCommand}" CommandParameter="Line"/>
+                    <fluent:Button Header="{x:Static properties:Resources.Circle}" 
+                                   LargeIcon="pack://application:,,,/Cadoscopia;component/Resources/Circle32.png"
+                                   Command="{Binding ExecuteCommandCommand}" CommandParameter="Circle"/>
+                    <fluent:Button Header="{x:Static properties:Resources.Point}"
+                                   Command="{Binding ExecuteCommandCommand}" CommandParameter="Point"/>
+                </fluent:RibbonGroupBox>
+                <fluent:RibbonGroupBox Header="{x:Static properties:Resources.Constraints}">
+                    <fluent:Button Icon="pack://application:,,,/Cadoscopia;component/Resources/Horizontal16.png" 
+                                   ToolTip="{x:Static properties:Resources.Horizontal}" SizeDefinition="Small"
+                                   Command="{Binding ExecuteCommandCommand}" CommandParameter="Horizontal"/>
+                    <fluent:Button Icon="pack://application:,,,/Cadoscopia;component/Resources/Vertical16.png" 
+                                   ToolTip="{x:Static properties:Resources.Vertical}" SizeDefinition="Small"
+                                   Command="{Binding ExecuteCommandCommand}" CommandParameter="Vertical"/>
+                    <fluent:Button Icon="pack://application:,,,/Cadoscopia;component/Resources/Perpendicular16.png" 
+                                   ToolTip="{x:Static properties:Resources.Perpendicular}" SizeDefinition="Small"
+                                   Command="{Binding ExecuteCommandCommand}" CommandParameter="Perpendicular"/>
+                    <fluent:Button Icon="pack://application:,,,/Cadoscopia;component/Resources/Parallel16.png" 
+                                   ToolTip="{x:Static properties:Resources.Parallel}" SizeDefinition="Small"
+                                   Command="{Binding ExecuteCommandCommand}" CommandParameter="Parallel"/>
+                </fluent:RibbonGroupBox>
+            </fluent:RibbonTabItem>
+        </fluent:Ribbon>
+        <Canvas Background="White" Grid.Row="1" MouseDown="Canvas_MouseDown" Cursor="{Binding CanvasCursor}"
                 MouseMove="Canvas_MouseMove" SnapsToDevicePixels="True" ClipToBounds="True"
                 Focusable="True" KeyDown="Canvas_KeyDown">
             <ItemsControl ItemsSource="{Binding Entities}">
@@ -47,8 +95,11 @@
                     <DataTemplate DataType="{x:Type local:PointViewModel}">
                         <Ellipse Width="6" Height="6" Stroke="{Binding Color}" Fill="{Binding Color}"/>
                     </DataTemplate>
-                    <DataTemplate DataType="{x:Type local:ConstraintParallelViewModel}">
-                        <Image Source="Resources/Parallel16.png" Width="16" Height="16" />
+                    <DataTemplate DataType="{x:Type local:ParallelViewModel}">
+                        <Image Source="Resources/ParallelGlyph16.png" Width="16" Height="16" />
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type local:VerticalViewModel}">
+                        <Image Source="Resources/VerticalGlyph16.png" Width="16" Height="16" />
                     </DataTemplate>
                 </ItemsControl.Resources>
                 <ItemsControl.ItemContainerStyle>
@@ -59,7 +110,7 @@
                 </ItemsControl.ItemContainerStyle>
             </ItemsControl>
         </Canvas>
-        <TextBlock Grid.Row="4" Text="{Binding Status}" Background="{Binding StatusBackground, FallbackValue=#2B579A}" 
+        <TextBlock Grid.Row="2" Text="{Binding Status}" Background="{Binding StatusBackground, FallbackValue=#2B579A}" 
                    Foreground="White" Padding="5,3"/>
     </Grid>
-</Window>
+</fluent:RibbonWindow>

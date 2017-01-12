@@ -23,7 +23,9 @@
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
+using Cadoscopia.DatabaseServices;
 using Cadoscopia.Parametric.SketchServices;
+using JetBrains.Annotations;
 
 namespace Cadoscopia
 {
@@ -36,6 +38,10 @@ namespace Cadoscopia
         #endregion
 
         #region Properties
+
+        public SharedObjectDocument([NotNull] Database database) : base(database)
+        {
+        }
 
         public List<Feature> Features { get; } = new List<Feature>();
 

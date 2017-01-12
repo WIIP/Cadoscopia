@@ -24,18 +24,28 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using Cadoscopia.DatabaseServices;
 using JetBrains.Annotations;
 
 namespace Cadoscopia
 {
-    public abstract class Document: INotifyPropertyChanged, IXmlSerializable
+    public abstract class Document : INotifyPropertyChanged, IXmlSerializable
     {
+        #region Fields
+
         Uri uri;
 
+        #endregion
+
         #region Properties
+
+        public ICommand CommandInProgress { get; internal set; }
+
+        public Database Database { get; private set; }
 
         [CanBeNull]
         public string Name => Uri != null ? Path.GetFileNameWithoutExtension(Uri.AbsolutePath) : null;
@@ -55,7 +65,25 @@ namespace Cadoscopia
 
         #endregion
 
+        protected Document([NotNull] Database database)
+        {
+            if (database == null) throw new ArgumentNullException(nameof(database));
+
+            Database = database;
+        }
+
+        #region Events
+
         public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
+
+        #region Methods
+
+        public XmlSchema GetSchema()
+        {
+            return null;
+        }
 
         [NotifyPropertyChangedInvocator]
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -63,13 +91,10 @@ namespace Cadoscopia
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public XmlSchema GetSchema()
-        {
-            return null;
-        }
-
         public abstract void ReadXml(XmlReader reader);
 
         public abstract void WriteXml(XmlWriter writer);
+
+        #endregion
     }
 }

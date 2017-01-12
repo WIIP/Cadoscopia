@@ -20,15 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Diagnostics;
+using System;
+using Cadoscopia.Geometry;
 
 namespace Cadoscopia.Parametric.SketchServices.Entities
 {
-    public abstract class Entity: SketchObject
+    [Serializable]
+    public abstract class Entity : SketchObject
     {
         #region Properties
 
         public abstract Geometry.Entity Geometry { get; }
+
+        #endregion
+
+        #region Methods
+
+        public abstract void Move(Vector vector);
 
         #endregion
     }

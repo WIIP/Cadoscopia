@@ -23,10 +23,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using Cadoscopia.DatabaseServices;
 using Cadoscopia.IO;
 using Cadoscopia.Parametric;
 using Cadoscopia.Parametric.SketchServices;
@@ -41,23 +43,22 @@ namespace Cadoscopia
 {
     public class MainViewModel : ViewModel
     {
+        readonly IApp app;
+
         #region Fields
+
+        [CanBeNull] ICommandController commandController;
 
         Cursor canvasCursor;
 
-        Entity entityInProgress;
-
-        readonly HashSet<EntityViewModel> selection = new HashSet<EntityViewModel>();
-
-        readonly Sketch sketch = new Sketch();
+        public IEnumerable<EntityViewModel> Selection
+        {
+            get { return Entities.Where(e => e.IsSelected); }
+        }
 
         string status = Resources.Ready;
 
         SolidColorBrush statusBackground = new SolidColorBrush(Color.FromRgb(43, 87, 154));
-
-        int step = -1;
-
-        readonly IMainViewModelUserInput userInput;
 
         #endregion
 
@@ -78,13 +79,9 @@ namespace Cadoscopia
 
         public ICommand HorizontalCommand { get; }
 
-        public ICommand LineCommand { get; }
-
         public ICommand ParallelCommand { get; }
 
         public ICommand PerpendicularCommand { get; }
-
-        public ICommand SaveCommand { get; }
 
         public string Status
         {
@@ -108,74 +105,123 @@ namespace Cadoscopia
             }
         }
 
-        public ICommand VerticalCommand { get; }
+        public ICommand ExecuteCommandCommand { get; }
+
+        public ObservableCollection<TransactionViewModel> UndoItems { get; }
+
+        public bool UndoIsEnabled
+        {
+            get
+            {
+                Document activeDocument = app.ActiveDocument;
+                if (activeDocument == null) return false;
+                return activeDocument.Database.TransactionManager.CanUndo
+                       && activeDocument.CommandInProgress == null;
+            }
+        }
+
+        public bool RedoIsEnabled
+        {
+            get
+            {
+                Document activeDocument = app.ActiveDocument;
+                if (activeDocument == null) return false;
+                return activeDocument.Database.TransactionManager.CanRedo
+                       && activeDocument.CommandInProgress == null;
+            }
+        }
+
+        public ObservableCollection<TransactionViewModel> RedoItems { get; }
 
         #endregion
 
         #region Constructors
 
-        public MainViewModel([NotNull] IMainViewModelUserInput userInput)
+        public MainViewModel([NotNull] IApp app)
         {
-            if (userInput == null) throw new ArgumentNullException(nameof(userInput));
+            if (app == null) throw new ArgumentNullException(nameof(app));
 
-            this.userInput = userInput;
+            this.app = app;
+
+            Document activeDocument = app.ActiveDocument;
+            Debug.Assert(activeDocument != null, "activeDocument != null");
+
+            var sketch = (Sketch)app.ActiveEditObject;
+            Debug.Assert(sketch != null, "sketch != null");
 
             Entities = new ViewModelCollection<EntityViewModel, Entity>(sketch.Entities, EntityViewModelCreator);
+            
+            TransactionManager tm = activeDocument.Database.TransactionManager;
 
+            RedoItems = new ViewModelCollection<TransactionViewModel, Transaction>(tm.TransactionsThatCanBeRedone, 
+                TransactionViewModelCreator);
+            tm.TransactionsThatCanBeRedone.CollectionChanged += TransactionsThatCanBeRedone_CollectionChanged;
+
+            UndoItems = new ViewModelCollection<TransactionViewModel, Transaction>(tm.CommittedTransactions, 
+                TransactionViewModelCreator);
+            tm.CommittedTransactions.CollectionChanged += CommittedTransactions_CollectionChanged;
+
+            ExecuteCommandCommand = new RelayCommand(ExecuteCommandCommandExecute);
             HorizontalCommand = new RelayCommand(HorizontalCommandExecute, HorizontalVerticalCommandCanExecute);
             ParallelCommand = new RelayCommand(ParallelCommandExecute, ParallelCommandCommandCanExecute);
             PerpendicularCommand = new RelayCommand(PerpendicularCommandExecute, PerpendicularCommandCanExecute);
-            VerticalCommand = new RelayCommand(VerticalCommandExecute, HorizontalVerticalCommandCanExecute);
-            LineCommand = new RelayCommand(LineCommandExecute);
-            SaveCommand = new RelayCommand(SaveCommandExecute);
+        }
+
+        void CommittedTransactions_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(UndoIsEnabled));
+        }
+
+        void TransactionsThatCanBeRedone_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(RedoIsEnabled));
+        }
+
+        static TransactionViewModel TransactionViewModelCreator(Transaction tr)
+        {
+            return new TransactionViewModel(tr);
+        }
+
+        void ExecuteCommandCommandExecute(object obj)
+        {
+            string cmd = (string)obj;
+            commandController = app.CommandManager.ExecuteCommand(cmd);
         }
 
         #endregion
 
         #region Methods
 
-        void Solve()
+        public void Solve()
         {
+            var sketch = (Sketch)app.ActiveEditObject;
+            Debug.Assert(sketch != null, "sketch != null");
             IEnumerable<Constraint> constraints = sketch.Entities.OfType<Constraint>();
             if (!constraints.Any()) return;
             if (!Solver.Solve(constraints.ToList()))
                 MessageBox.Show(Resources.NoSolutionFound);
-
-            UpdateBindings();
         }
 
-        void ClearSelection()
+        public void ClearSelection()
         {
             foreach (EntityViewModel entity in Entities)
                 entity.IsSelected = false;
-            selection.Clear();
         }
 
         /// <summary>
-        /// Returns the entity which is near the passed point or null if there are no element.
+        /// Returns the entities which are near the passed point.
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
-        [CanBeNull]
-        T EntityAtPoint<T>(Point point) where T : EntityViewModel
+        public IEnumerable<T> EntitiesAtPoint<T>(Point point) where T : EntityViewModel
         {
             var gePoint = new Geometry.Point(point.X, point.Y);
-            for (int i = Entities.Count - 1; i >= 0; i--)
+            foreach (T evm in Entities.OfType<T>())
             {
-                EntityViewModel evm = Entities[i];
-                if (!(evm is T)) continue;
-                if (evm.SketchEntity == entityInProgress) continue;
-
                 double d = evm.SketchEntity.Geometry.GetDistanceTo(gePoint);
                 if (d > Constants.SELECTION_DISTANCE) continue;
-                var pvm = evm as PointViewModel;
-                if (pvm == null || !(entityInProgress is Line)) return (T) evm;
-                var lineInProgress = (Line) entityInProgress;
-                if (pvm.Point == lineInProgress.Start || pvm.Point == lineInProgress.End)
-                    continue;
-                return (T) evm;
+                yield return (T) evm;
             }
-            return null;
         }
 
         /// <summary>
@@ -183,137 +229,75 @@ namespace Cadoscopia
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
+        [NotNull]
         EntityViewModel EntityViewModelCreator([NotNull] Entity entity)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
 
             var line = entity as Line;
-            if (line != null) return new LineViewModel(line);
+            if (line != null) return new LineViewModel(line, Entities);
 
             var point = entity as Parametric.SketchServices.Entities.Point;
             if (point != null) return new PointViewModel(point);
 
-            var parallelConstraint = entity as Parallel;
-            if (parallelConstraint != null) return new ConstraintParallelViewModel(parallelConstraint);
+            var equalsConstraint = entity as Equals;
+            if (equalsConstraint != null) return new EqualsViewModel(equalsConstraint);
 
-            throw new NotSupportedException();
+            var parallelConstraint = entity as Parallel;
+            if (parallelConstraint != null) return new ParallelViewModel(parallelConstraint);
+
+            var verticalConstraint = entity as Vertical;
+            if (verticalConstraint != null) return new VerticalViewModel(verticalConstraint);
+
+            throw new NotImplementedException();
         }
 
         void HorizontalCommandExecute(object obj)
         {
             // TODO Must fail if the line already has a vertical constraint.
-            var line = (Line) selection.First().SketchEntity;
+            var line = (Line) Selection.First().SketchEntity;
             Solve();
         }
 
         bool HorizontalVerticalCommandCanExecute(object obj)
         {
-            return Parametric.SketchServices.Entities.Constraints.Equals.IsApplicable(selection.Select(vm => vm.SketchEntity));
-        }
-
-        void LineCommandExecute(object obj)
-        {
-            step = 0;
-            Status = Resources.LineFirstPoint;
-            CanvasCursor = Cursors.Cross;
+            return Parametric.SketchServices.Entities.Constraints.Equals.IsApplicable(Selection.Select(vm => vm.SketchEntity));
         }
 
         public void OnCanvasClick(Point position, bool shiftPressed)
         {
-            if (step == -1)
+            if (commandController != null)
+                commandController.OnCanvasClick(position, shiftPressed);
+            else
             {
                 // We are in selection mode.
                 if (!shiftPressed)
                     ClearSelection();
 
-                var entityAtPoint = EntityAtPoint<EntityViewModel>(position);
+                EntityViewModel entityAtPoint = EntitiesAtPoint<EntityViewModel>(position).FirstOrDefault();
                 if (entityAtPoint != null)
-                {
                     entityAtPoint.IsSelected = !entityAtPoint.IsSelected;
-                    if (entityAtPoint.IsSelected)
-                        selection.Add(entityAtPoint);
-                    else
-                        selection.Remove(entityAtPoint);
-                }
-                switch (selection.Count)
+                switch (Selection.Count())
                 {
                     case 0:
                         Status = Resources.Ready;
                         break;
 
                     case 1:
-                        string name = selection.First().SketchEntity.Geometry.GetType().Name.ToLower();
+                        string name = Selection.First().SketchEntity.Geometry.GetType().Name.ToLower();
                         Status = string.Format(Resources.OneEntitySelected, name);
                         break;
 
                     default:
-                        var data = selection.GroupBy(e => e.SketchEntity.Geometry.GetType())
-                            .Select(g => new {Metric = g.Key, Count = g.Count()})
+                        var data = Selection.GroupBy(e => e.SketchEntity.Geometry.GetType())
+                            .Select(g => new { Metric = g.Key, Count = g.Count() })
                             .OrderBy(x => x.Count);
                         if (data.Count() > 3)
-                            Status = string.Format(Resources.EntitiesSelected, selection.Count);
+                            Status = string.Format(Resources.EntitiesSelected, Selection.Count());
                         else
                             Status = string.Join(", ",
                                          data.Select(e => $"{e.Count} {Pluralize.Do(e.Metric.Name.ToLower(), e.Count)}"))
                                      + " " + Resources.Selected;
-                        break;
-                }
-            }
-            else
-            {
-                Line line;
-                switch (step)
-                {
-                    case 0:
-                        entityInProgress = line = new Line(sketch.AddPoint(),
-                            sketch.AddPoint());
-                        line.Start.X.Value = line.End.X.Value = position.X;
-                        line.Start.Y.Value = line.End.Y.Value = position.Y;
-                        UpdateBinding(line);
-                        UpdateBinding(line.Start);
-                        UpdateBinding(line.End);
-                        Status = Resources.LineSecondPoint;
-                        step++;
-                        break;
-
-                    default:
-                        line = (Line) entityInProgress;
-                        var pointAtPosition = EntityAtPoint<PointViewModel>(position);
-                        if (pointAtPosition != null)
-                        {
-                            sketch.Entities.Remove(line.End);
-                            line.End = pointAtPosition.Point;
-                            line.End.X.Value = position.X;
-                            line.End.Y.Value = position.Y;
-                            // Update entities which share this point
-                            IEnumerable<LineViewModel> lines =
-                                Entities.OfType<LineViewModel>()
-                                    .Where(
-                                        lvm =>
-                                            lvm.SketchLine != line &&
-                                            (lvm.Start.Point == pointAtPosition.Point ||
-                                             lvm.End.Point == pointAtPosition.Point));
-                            foreach (LineViewModel lvm in lines)
-                                lvm.UpdateBindings();
-                        }
-
-                        line.End.X.Value = position.X;
-                        line.End.Y.Value = position.Y;
-                        UpdateBinding(line);
-                        UpdateBinding(line.End);
-
-                        if (pointAtPosition != null)
-                            Reinit();
-                        else
-                        {
-                            Status = Resources.NextPoint;
-                            Parametric.SketchServices.Entities.Point sketchLineEnd = line.End;
-                            entityInProgress = new Line(sketchLineEnd,
-                                sketch.AddPoint());
-                            // Add the line here, as we know its starting point
-                            UpdateBinding((Line) entityInProgress);
-                            step++;
-                        }
                         break;
                 }
             }
@@ -324,40 +308,35 @@ namespace Cadoscopia
             switch (key)
             {
                 case Key.Escape:
+                    commandController?.StopCommand();
                     StopCommand();
+                    ClearSelection();
                     break;
             }
         }
 
-        public void OnCanvasMove(Point position)
+        public void OnCanvasMove(Point from, Point to, bool leftButtonPressed)
         {
-            var sketchLine = entityInProgress as Line;
-            // ReSharper disable once InvertIf
-            if (sketchLine != null && step > 0)
-            {
-                sketchLine.End.X.Value = position.X;
-                sketchLine.End.Y.Value = position.Y;
-
-                UpdateBinding(sketchLine);
-                UpdateBinding(sketchLine.End);
-            }
+            if (commandController != null)
+                commandController?.OnCanvasMove(from, to, leftButtonPressed);
+            else if (leftButtonPressed)
+                commandController = app.CommandManager.ExecuteCommand("Drag");
         }
 
         bool ParallelCommandCommandCanExecute(object obj)
         {
-            return Parallel.IsApplicable(selection.Select(e => e.SketchEntity));
+            return Parallel.IsApplicable(Selection.Select(e => e.SketchEntity));
         }
 
         void ParallelCommandExecute(object obj)
         {
-            var parallel = new Parallel((Line) selection.ElementAt(0).SketchEntity, 
-                (Line) selection.ElementAt(1).SketchEntity);
+            new Parallel((Line) Selection.ElementAt(0).SketchEntity, (Line) Selection.ElementAt(1).SketchEntity);
             Solve();
         }
 
         bool PerpendicularCommandCanExecute(object obj)
         {
-            return Perpendicular.IsApplicable(selection.Select(vm => vm.SketchEntity));
+            return Perpendicular.IsApplicable(Selection.Select(vm => vm.SketchEntity));
         }
 
         void PerpendicularCommandExecute(object obj)
@@ -365,20 +344,14 @@ namespace Cadoscopia
             Solve();
         }
 
-        void Reinit()
+        public void Reinit()
         {
-            entityInProgress = null;
             CanvasCursor = Cursors.Arrow;
-            Status = Resources.Ready;
-            step = -1;
-        }
-
-        void SaveCommandExecute(object obj)
-        {
-            string fileName = userInput.GetSaveFileName();
-            if (fileName == null) return;
-            var gxs = new GenericXmlSerializer<Sketch>();
-            gxs.Write(sketch, fileName);
+            app.SetStatus();
+            commandController = null;
+            if (app.ActiveDocument != null) app.ActiveDocument.CommandInProgress = null;
+            OnPropertyChanged(nameof(RedoIsEnabled));
+            OnPropertyChanged(nameof(UndoIsEnabled));
         }
 
         /// <summary>
@@ -386,43 +359,7 @@ namespace Cadoscopia
         /// </summary>
         void StopCommand()
         {
-            if (entityInProgress != null)
-            {
-                sketch.Entities.Remove(entityInProgress);
-                var lineViewModel = entityInProgress as Line;
-                if (lineViewModel != null)
-                {
-                    if (sketch.CountReferences(lineViewModel.Start) == 1)
-                        sketch.Entities.Remove(lineViewModel.Start);
-                    if (sketch.CountReferences(lineViewModel.End) == 1)
-                        sketch.Entities.Remove(lineViewModel.End);
-                }
-                Reinit();
-            }
-            step = -1;
-        }
-
-        void UpdateBinding([NotNull] Entity entity)
-        {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-
-            Entities.First(evm => evm.SketchEntity == entity).UpdateBindings();
-        }
-
-        /// <summary>
-        /// Update bindings.
-        /// </summary>
-        void UpdateBindings()
-        {
-            foreach (EntityViewModel entity in Entities)
-                entity.UpdateBindings();
-        }
-
-        void VerticalCommandExecute(object obj)
-        {
-            // TODO Must fail if the line already has a horizontal constraint.
-            var line = (Line) selection.First().SketchEntity;
-            Solve();
+            Reinit();
         }
 
         #endregion

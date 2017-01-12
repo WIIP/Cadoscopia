@@ -20,6 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
 using Cadoscopia.Parametric.SketchServices.Entities;
 using JetBrains.Annotations;
 
@@ -27,6 +30,18 @@ namespace Cadoscopia
 {
     class LineViewModel : EntityViewModel
     {
+        #region Fields
+
+        double x1;
+
+        double x2;
+
+        double y1;
+
+        double y2;
+
+        #endregion
+
         #region Properties
 
         [NotNull]
@@ -66,7 +81,7 @@ namespace Cadoscopia
             get { return SketchLine.Start.X.Value; }
             set
             {
-                SketchLine.Start.X.Value = value;
+                x1 = value;
                 OnPropertyChanged(nameof(X1));
             }
         }
@@ -76,7 +91,7 @@ namespace Cadoscopia
             get { return SketchLine.End.X.Value; }
             set
             {
-                SketchLine.End.X.Value = value;
+                x2 = value;
                 OnPropertyChanged(nameof(X2));
             }
         }
@@ -86,7 +101,7 @@ namespace Cadoscopia
             get { return SketchLine.Start.Y.Value; }
             set
             {
-                SketchLine.Start.Y.Value = value;
+                y1 = value;
                 OnPropertyChanged(nameof(Y1));
             }
         }
@@ -96,7 +111,7 @@ namespace Cadoscopia
             get { return SketchLine.End.Y.Value; }
             set
             {
-                SketchLine.End.Y.Value = value;
+                y2 = value;
                 OnPropertyChanged(nameof(Y2));
             }
         }
@@ -105,26 +120,95 @@ namespace Cadoscopia
 
         #region Constructors
 
-        public LineViewModel(Line line) : base(line)
+        public LineViewModel(Line line, ObservableCollection<EntityViewModel> entities) : base(line)
         {
-            Start = new PointViewModel(line.Start);
-            End = new PointViewModel(line.End);
+            Start = entities.OfType<PointViewModel>().First(pvm => pvm.SketchEntity == line.Start);
+            End = entities.OfType<PointViewModel>().First(pvm => pvm.SketchEntity == line.End);
+
+            X1 = line.Start.X.Value;
+            Y1 = line.Start.Y.Value;
+            X2 = line.End.X.Value;
+            Y2 = line.End.Y.Value;
+
+            line.PropertyChanging += Line_PropertyChanging;
+            ;
+            line.PropertyChanged += Line_PropertyChanged;
+
+            line.Start.PropertyChanging += Start_PropertyChanging;
+            line.Start.PropertyChanged += Start_PropertyChanged;
+            line.Start.X.PropertyChanged += Start_X_PropertyChanged;
+            line.Start.Y.PropertyChanged += Start_Y_PropertyChanged;
+
+            line.End.PropertyChanging += End_PropertyChanging;
+            line.End.PropertyChanged += End_PropertyChanged;
+            line.End.X.PropertyChanged += End_X_PropertyChanged;
+            line.End.Y.PropertyChanged += End_Y_PropertyChanged;
         }
 
         #endregion
 
         #region Methods
 
-        /// <summary>
-        /// Forces re-evaluation of parameters.
-        /// </summary>
-        public override void UpdateBindings()
+        void End_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            X2 = SketchLine.End.X.Value;
+            Y2 = SketchLine.End.Y.Value;
+            SketchLine.End.X.PropertyChanged += End_X_PropertyChanged;
+            SketchLine.End.Y.PropertyChanged += End_Y_PropertyChanged;
+        }
+
+        void End_PropertyChanging(object sender, PropertyChangingEventArgs e)
+        {
+            SketchLine.End.X.PropertyChanged -= End_X_PropertyChanged;
+            SketchLine.End.Y.PropertyChanged -= End_Y_PropertyChanged;
+        }
+
+        void End_X_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            X2 = SketchLine.End.X.Value;
+        }
+
+        void End_Y_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            Y2 = SketchLine.End.Y.Value;
+        }
+
+        void Line_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             X1 = SketchLine.Start.X.Value;
             Y1 = SketchLine.Start.Y.Value;
-
             X2 = SketchLine.End.X.Value;
             Y2 = SketchLine.End.Y.Value;
+        }
+
+        void Line_PropertyChanging(object sender, PropertyChangingEventArgs e)
+        {
+            SketchLine.Start.PropertyChanged -= Start_PropertyChanged;
+            SketchLine.End.PropertyChanged -= End_PropertyChanged;
+        }
+
+        void Start_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            X1 = SketchLine.Start.X.Value;
+            Y1 = SketchLine.Start.Y.Value;
+            SketchLine.Start.X.PropertyChanged += Start_X_PropertyChanged;
+            SketchLine.Start.Y.PropertyChanged += Start_Y_PropertyChanged;
+        }
+
+        void Start_PropertyChanging(object sender, PropertyChangingEventArgs e)
+        {
+            SketchLine.Start.X.PropertyChanged -= Start_X_PropertyChanged;
+            SketchLine.Start.Y.PropertyChanged -= Start_Y_PropertyChanged;
+        }
+
+        void Start_X_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            X1 = SketchLine.Start.X.Value;
+        }
+
+        void Start_Y_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            Y1 = SketchLine.Start.Y.Value;
         }
 
         #endregion

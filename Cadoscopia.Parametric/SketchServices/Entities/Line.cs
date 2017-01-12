@@ -24,18 +24,19 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Xml;
+using Cadoscopia.Geometry;
 using JetBrains.Annotations;
 
 namespace Cadoscopia.Parametric.SketchServices.Entities
 {
-    public class Line : Entity, IObjectWithReferences
+    public class Line : GeometricEntity, IObjectWithReferences
     {
         #region Properties
 
         public Point End { get; set; }
 
-        public override Geometry.Entity Geometry => new Geometry.Line(new Geometry.Point(Start.X.Value, Start.Y.Value),
-            new Geometry.Point(End.X.Value, End.Y.Value));
+        public override Cadoscopia.Geometry.Entity Geometry => new Cadoscopia.Geometry.Line(new Cadoscopia.Geometry.Point(Start.X.Value, Start.Y.Value),
+            new Cadoscopia.Geometry.Point(End.X.Value, End.Y.Value));
 
         public Point Start { get; set; }
 
@@ -47,15 +48,15 @@ namespace Cadoscopia.Parametric.SketchServices.Entities
         {
             if (start == null) throw new ArgumentNullException(nameof(start));
             if (end == null) throw new ArgumentNullException(nameof(end));
-            if (start.Sketch != end.Sketch)
+            if (start.Parent != end.Parent)
                 throw new ArgumentException("The two points must belong to the same sketch.");
 
             Start = start;
             End = end;
 
-            start.Sketch?.Entities.Add(this);
+            start.Parent?.Entities.Add(this);
 
-            Sketch = start.Sketch;
+            Parent = start.Parent;
         }
 
         /// <summary>
@@ -67,21 +68,21 @@ namespace Cadoscopia.Parametric.SketchServices.Entities
 
         public void WriteXmlWithReferences(XmlWriter writer)
         {
-            if (Sketch == null)
+            if (Parent == null)
                 throw new InvalidOperationException("This method cannot be called if the line is not associated to a sketch.");
 
             writer.WriteStartElement(nameof(Start));
-            writer.WriteAttributeString("Ref", Sketch.Entities.IndexOf(Start).ToString());
+            writer.WriteAttributeString("Ref", Parent.Entities.IndexOf(Start).ToString());
             writer.WriteEndElement();
 
             writer.WriteStartElement(nameof(End));
-            writer.WriteAttributeString("Ref", Sketch.Entities.IndexOf(End).ToString());
+            writer.WriteAttributeString("Ref", Parent.Entities.IndexOf(End).ToString());
             writer.WriteEndElement();
         }
 
         public void ReadXmlWithReferences(XmlReader reader)
         {
-            if (Sketch == null)
+            if (Parent == null)
                 throw new InvalidOperationException(
                     "This method cannot be called if the line is not associated to a sketch.");
 
@@ -98,8 +99,14 @@ namespace Cadoscopia.Parametric.SketchServices.Entities
             reader.ReadStartElement(pointName);
             if (refAsString == null) return null;
             int reference = int.Parse(refAsString);
-            Debug.Assert(Sketch != null, "Sketch != null");
-            return (Point) Sketch.Entities.ElementAt(reference);
+            Debug.Assert(Parent != null, "Sketch != null");
+            return (Point) Parent.Entities.ElementAt(reference);
+        }
+
+        public override void Move(Vector vector)
+        {
+            Start.Move(vector);
+            End.Move(vector);
         }
 
         #endregion

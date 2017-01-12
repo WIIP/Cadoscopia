@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.IO;
-using Cadoscopia;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Tests
@@ -29,31 +27,5 @@ namespace Tests
     [TestClass]
     public class MainViewModelTest
     {
-        #region Types
-
-        class UserInput : IMainViewModelUserInput
-        {
-            #region Methods
-
-            public string GetSaveFileName()
-            {
-                return Path.GetTempFileName();
-            }
-
-            #endregion
-        }
-
-        #endregion
-
-        #region Methods
-
-        [TestMethod]
-        public void TestSaveCommand()
-        {
-            var sut = new MainViewModel(new UserInput());
-            sut.SaveCommand.Execute(null);
-        }
-
-        #endregion
     }
 }

@@ -133,15 +133,64 @@
     <value>Aucune solution n'a été trouvée.</value>
   </data>
   <data name="NextPoint" xml:space="preserve">
-    <value>Point suivant :</value>
+    <value>Point suivant</value>
   </data>
   <data name="LineSecondPoint" xml:space="preserve">
-    <value>Sélectionnez le deuxième point :</value>
+    <value>Sélectionnez le point d'arrivée</value>
   </data>
   <data name="LineFirstPoint" xml:space="preserve">
-    <value>Sélectionnez le premier point :</value>
+    <value>Sélectionnez le point de départ de la ligne</value>
   </data>
   <data name="File" xml:space="preserve">
     <value>Fichier</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Début</value>
+  </data>
+  <data name="Constraints" xml:space="preserve">
+    <value>Contraintes</value>
+  </data>
+  <data name="Draw" xml:space="preserve">
+    <value>Dessin</value>
+  </data>
+  <data name="Horizontal" xml:space="preserve">
+    <value>Horizontal</value>
+  </data>
+  <data name="Line" xml:space="preserve">
+    <value>Ligne</value>
+  </data>
+  <data name="Parallel" xml:space="preserve">
+    <value>Parallèle</value>
+  </data>
+  <data name="Perpendicular" xml:space="preserve">
+    <value>Perpendiculaire</value>
+  </data>
+  <data name="Vertical" xml:space="preserve">
+    <value>Vertical</value>
+  </data>
+  <data name="Redo" xml:space="preserve">
+    <value>Refaire</value>
+  </data>
+  <data name="Undo" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="Circle" xml:space="preserve">
+    <value>Cercle</value>
+    <comment>Cercle</comment>
+  </data>
+  <data name="Point" xml:space="preserve">
+    <value>Point</value>
+  </data>
+  <data name="PointPosition" xml:space="preserve">
+    <value>Position du point</value>
+    <comment>Position du point</comment>
+  </data>
+  <data name="Drag" xml:space="preserve">
+    <value>Glisser</value>
+    <comment>Glisser</comment>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Erreur</value>
+    <comment>Erreur</comment>
   </data>
 </root>
